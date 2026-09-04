@@ -8,14 +8,14 @@ const GAP = 8;
 const DEFAULT_PER_LINE = 10;
 const MAX_ICONS = 100;
 
-// اللواحق الشائعة في أسماء الأيقونات
+// اللواحق الشائعة
 const SUFFIXES = [
   'original', 'plain', 'line', 'fill',
   'colored', 'color', 'wordmark',
   'horizontal', 'vertical'
 ];
 
-// اختصارات يدوية (مثال: js => javascript)
+// اختصارات
 const shortNames = {
   js: 'javascript',
   ts: 'typescript',
@@ -41,14 +41,27 @@ function getIconKeys(baseName) {
 function findBestIcon(baseName) {
   const keys = getIconKeys(baseName);
   if (keys.length === 0) return null;
-
   const preferred = ['original', 'plain', 'line', 'fill'];
   for (const pref of preferred) {
     const match = keys.find(key => key === `${baseName}-${pref}`);
     if (match) return match;
   }
-
   return keys[0];
+}
+
+/**
+ * استخراج أبعاد viewBox من محتوى SVG
+ */
+function getViewBoxDimensions(svgString) {
+  const match = svgString.match(/viewBox=["']([^"']+)["']/);
+  if (match && match[1]) {
+    const parts = match[1].trim().split(/[\s,]+/).map(Number);
+    if (parts.length === 4 && parts.every(n => !isNaN(n))) {
+      return { width: parts[2], height: parts[3] };
+    }
+  }
+  // افتراضي
+  return { width: 48, height: 48 };
 }
 
 const iconNameList = [...new Set(Object.keys(icons).map(getBaseName))];
@@ -101,7 +114,6 @@ export default {
       const finalWidth = perLineCount * BOX_SIZE + (perLineCount - 1) * GAP;
       const finalHeight = rows * BOX_SIZE + (rows - 1) * GAP;
 
-      // ألوان ثابتة (بدون ثيم)
       const bgColor = '#1a1b27';
       const boxBg = '#2d2d3d';
       const boxStroke = '#3d3d4d';
@@ -116,18 +128,23 @@ export default {
 
         const iconKey = findBestIcon(baseName);
 
-        // الصندوق
+        // رسم الصندوق الخلفي
         svgContent += `
           <g transform="translate(${x}, ${y})">
             <rect width="${BOX_SIZE}" height="${BOX_SIZE}" rx="12" fill="${boxBg}" stroke="${boxStroke}" stroke-width="1"/>
           </g>
         `;
 
-        // الأيقونة
         if (iconKey) {
+          // استخراج أبعاد الأيقونة وحساب معامل التحجيم
+          const svgString = icons[iconKey];
+          const { width: vbWidth, height: vbHeight } = getViewBoxDimensions(svgString);
+          const scale = ICON_SIZE / vbWidth; // نفترض أن الأيقونة مربعة
+
+          // تطبيق التحويل: ترجمة إلى الموضع مع التحجيم
           svgContent += `
-          <g transform="translate(${x + PADDING}, ${y + PADDING})">
-            ${icons[iconKey]}
+          <g transform="translate(${x + PADDING}, ${y + PADDING}) scale(${scale})">
+            ${svgString}
           </g>
         `;
         } else {
