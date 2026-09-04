@@ -6,7 +6,7 @@ const PADDING = 0;                 // يمكن تغييرها (أو جعلها 0
 const GAP = 8;
 const BOX = ICON_SIZE;
 const RADIUS = 12;
-const BG = '#1b1f23';
+const BG = '#667248';
 
 function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
