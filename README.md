@@ -1,4 +1,4 @@
 # Charmly Icons
 
 
-![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=js,html,css&perline=2)
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=js,html,css)
