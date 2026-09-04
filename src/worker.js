@@ -25,14 +25,11 @@ export default {
       const ICON_SIZE = 48;
       const PADDING = 8;
       const BOX_SIZE = ICON_SIZE + PADDING * 2; // 64
-      const GAP = 8; // مسافة بين الأيقونات
+      const GAP = 8; // مسافة بين الصناديق
 
-      // عدد الأيقونات في السطر (افتراضيًا كلهم في سطر واحد)
       const perLineCount = perLine ? Math.min(Math.max(perLine, 1), 50) : iconNames.length;
 
       const rows = Math.ceil(iconNames.length / perLineCount);
-
-      // حساب الأبعاد النهائية مع المسافات
       const finalWidth = perLineCount * BOX_SIZE + (perLineCount - 1) * GAP;
       const finalHeight = rows * BOX_SIZE + (rows - 1) * GAP;
 
@@ -47,9 +44,11 @@ export default {
         const row = Math.floor(count / perLineCount);
         const col = count % perLineCount;
 
-        // حساب الموقع مع الأخذ في الاعتبار المسافات
+        // موقع الصندوق
         const x = col * (BOX_SIZE + GAP);
         const y = row * (BOX_SIZE + GAP);
+
+        // الأيقونة داخل الصندوق بإزاحة PADDING فقط
         const iconX = x + PADDING;
         const iconY = y + PADDING;
 
@@ -57,16 +56,18 @@ export default {
           svgContent += `
             <g transform="translate(${x}, ${y})">
               <rect width="${BOX_SIZE}" height="${BOX_SIZE}" rx="12" fill="${boxBg}" stroke="${boxStroke}" stroke-width="1"/>
-              <g transform="translate(${iconX}, ${iconY})">
-                ${icons[name]}
-              </g>
+            </g>
+            <g transform="translate(${iconX}, ${iconY})">
+              ${icons[name]}
             </g>
           `;
         } else {
           svgContent += `
             <g transform="translate(${x}, ${y})">
               <rect width="${BOX_SIZE}" height="${BOX_SIZE}" rx="12" fill="${boxBg}" stroke="${boxStroke}" stroke-width="1"/>
-              <text x="${BOX_SIZE/2}" y="${BOX_SIZE/2 + 5}" text-anchor="middle" font-family="Arial" font-size="12" fill="#999">${name}</text>
+            </g>
+            <g transform="translate(${iconX}, ${iconY})">
+              <text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" fill="#999">${name}</text>
             </g>
           `;
         }
