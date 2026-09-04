@@ -6,7 +6,7 @@ const PADDING = 0;                 // يمكن تغييرها (أو جعلها 0
 const GAP = 8;
 const BOX = ICON_SIZE;
 const RADIUS = 12;
-const BG = '#667248';
+const BG = '#1a1b2e';   // بنفسجي كحلي غامق هادئ
 
 function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
@@ -84,7 +84,7 @@ export default {
     return new Response(svg, {
       headers: {
         'Content-Type': 'image/svg+xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=86400, immutable',
+        'Cache-Control': 'public, max-age=60, immutable',
         'Access-Control-Allow-Origin': '*',
       },
     });
