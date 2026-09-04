@@ -1,34 +1,37 @@
-
 import icons from '../dist/icons.json' assert { type: 'json' };
+
 // ---- ثوابت التخطيط ----
-const ICON_SIZE = 48;                    // حجم الأيقونة الفعلي داخل الصندوق
-const PADDING = 0;                       // مسافة داخلية حول الأيقونة (8 من كل جهة)
-const GAP = 8;                           // المسافة بين صندوق وصندوق
-const BOX = ICON_SIZE + PADDING * 2;     // = 64 (حجم الصندوق كامل)
-const RADIUS = 12;                       // زوايا دائرية للصندوق
-const BG = '#1b1f23';                    // خلفية داكنة ثابتة (بدون ثيمات)
+const ICON_SIZE = 48;
+const PADDING = 0;                 // يمكن تغييرها (أو جعلها 0 حسب الرغبة)
+const GAP = 8;
+const BOX = ICON_SIZE;
+const RADIUS = 12;
+const BG = '#1b1f23';
 
 function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
-// كل أيقونة بتترسم كـ <svg> واحد متداخل (مش تغليف مزدوج)
-// الـ viewBox الأصلي بتاعها + width/height=48 بيخليا تتحجم تلقائيًا وبدون تشويه
-// سواء كانت 24x24 أو 256x256 أو أي مقاس تاني، عن طريق preserveAspectRatio
-function renderIcon(name, x, y) {
+// بناء أيقونة داخل صندوق مقصوص
+function renderIcon(name, x, y, index) {
   const icon = icons[name];
   if (!icon) return '';
+
+  const clipId = `clip-${index}`;  // معرف فريد لكل صندوق
+
   return (
-    `<g>` +
-    `<rect x="${x}" y="${y}" width="${BOX}" height="${BOX}" rx="${RADIUS}" fill="${BG}"/>` +
-    `<svg x="${x + PADDING}" y="${y + PADDING}" width="${ICON_SIZE}" height="${ICON_SIZE}" ` +
+    `<g transform="translate(${x}, ${y})">` +
+    `<rect width="${BOX}" height="${BOX}" rx="${RADIUS}" fill="${BG}"/>` +
+    `<clipPath id="${clipId}"><rect width="${BOX}" height="${BOX}" rx="${RADIUS}"/></clipPath>` +
+    `<g clip-path="url(#${clipId})">` +
+    `<svg x="${PADDING}" y="${PADDING}" width="${ICON_SIZE}" height="${ICON_SIZE}" ` +
     `viewBox="${escapeAttr(icon.viewBox)}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>` +
+    `</g>` +
     `</g>`
   );
 }
 
 function buildSvg(names, perline) {
-  // تجاهل أي اسم أيقونة مش موجود بدل ما يكسر التخطيط
   const valid = names.filter((n) => icons[n]);
 
   if (valid.length === 0) {
@@ -37,7 +40,6 @@ function buildSvg(names, perline) {
       `No valid icons found</text></svg>`;
   }
 
-  // perline اختياري: لو مش موجود أو صفر أو سالب => الكل في سطر واحد
   const columns = perline && perline > 0 ? Math.min(perline, valid.length) : valid.length;
   const rows = Math.ceil(valid.length / columns);
 
@@ -50,7 +52,7 @@ function buildSvg(names, perline) {
     const row = Math.floor(idx / columns);
     const x = col * (BOX + GAP);
     const y = row * (BOX + GAP);
-    body += renderIcon(name, x, y);
+    body += renderIcon(name, x, y, idx);
   });
 
   return (
@@ -68,15 +70,10 @@ export default {
     }
 
     const iParam = url.searchParams.get('i') || '';
-    const names = iParam
-      .split(',')
-      .map((s) => s.trim().toLowerCase())
-      .filter(Boolean);
+    const names = iParam.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
 
     if (names.length === 0) {
-      return new Response('Missing "i" query parameter, e.g. ?i=js,html,css', {
-        status: 400,
-      });
+      return new Response('Missing "i" query parameter, e.g. ?i=js,html,css', { status: 400 });
     }
 
     const perlineParam = url.searchParams.get('perline');
