@@ -1,8 +1,7 @@
 {
   "name": "charmly",
   "version": "1.0.0",
-  "description": "Charmly Icons API",
   "scripts": {
-    "build": "echo 'No build required'"
+    "build": "node build-icons.js"
   }
 }

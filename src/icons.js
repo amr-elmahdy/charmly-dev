@@ -1,6 +1,20 @@
-export default {
-  javascript: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#F7DF1E"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#000">JS</text></svg>',
-  typescript: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#3178C6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">TS</text></svg>',
-  python: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#3776AB"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">PY</text></svg>',
-  react: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#61DAFB"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="16" fill="#000">⚛</text></svg>',
-};
+const fs = require('fs');
+const path = require('path');
+
+const iconsDir = path.join(__dirname, 'icons');
+const distDir = path.join(__dirname, 'dist');
+
+if (!fs.existsSync(distDir)) fs.mkdirSync(distDir);
+
+const icons = {};
+const files = fs.readdirSync(iconsDir);
+
+for (const file of files) {
+  if (file.endsWith('.svg')) {
+    const name = file.replace('.svg', '').toLowerCase();
+    icons[name] = String(fs.readFileSync(path.join(iconsDir, file)));
+  }
+}
+
+fs.writeFileSync(path.join(distDir, 'icons.json'), JSON.stringify(icons));
+console.log(`✅ Generated ${Object.keys(icons).length} icons`);
