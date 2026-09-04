@@ -4,7 +4,9 @@ const path = require('path');
 const iconsDir = path.join(__dirname, 'icons');
 const distDir = path.join(__dirname, 'dist');
 
-if (!fs.existsSync(distDir)) fs.mkdirSync(distDir);
+if (!fs.existsSync(distDir)) {
+  fs.mkdirSync(distDir);
+}
 
 const icons = {};
 const files = fs.readdirSync(iconsDir);
