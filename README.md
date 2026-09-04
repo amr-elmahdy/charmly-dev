@@ -4,5 +4,6 @@
 
 ## الاستخدام
 
-```markdown
 ![Skills](https://charmly.<subdomain>.workers.dev/?i=js,html,css,react)
+
+https://charmly.amrelmahdy001-b28.workers.dev/?i=js
