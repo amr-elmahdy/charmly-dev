@@ -1,4 +1,4 @@
-import icons from '../dist/icons.json';
+
 import icons from '../dist/icons.json' assert { type: 'json' };
 // ---- ثوابت التخطيط ----
 const ICON_SIZE = 48;                    // حجم الأيقونة الفعلي داخل الصندوق
