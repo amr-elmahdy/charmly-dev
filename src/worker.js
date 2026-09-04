@@ -1,5 +1,3 @@
-import icons from './icons.js';
-
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -12,31 +10,35 @@ export default {
       return new Response('No icons specified. Use ?i=js,html,css', { status: 400 });
     }
     
+    // جلب كل ملفات SVG من مجلد icons
+    const iconFiles = import.meta.glob('./icons/*.svg', { as: 'raw', eager: true });
+    
     const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
-    const textColor = theme === 'light' ? '#000000' : '#ffffff';
+    const perLine = Math.min(Math.max(perline, 1), 50);
+    const rows = Math.ceil(iconNames.length / perLine);
+    const finalWidth = perLine * 48;
+    const finalHeight = rows * 48;
+    const actualWidth = Math.min(iconNames.length, perLine) * 48;
     
     let svgContent = '';
     let count = 0;
     
     for (let name of iconNames) {
-      if (icons[name]) {
-        svgContent += `<g transform="translate(${count * 48}, 0)">${icons[name]}</g>`;
-        count++;
+      const svg = iconFiles[`./icons/${name}.svg`];
+      const row = Math.floor(count / perLine);
+      const col = count % perLine;
+      const translate = `translate(${col * 48}, ${row * 48})`;
+      
+      if (svg) {
+        svgContent += `<g transform="${translate}">${svg}</g>`;
       } else {
-        svgContent += `<g transform="translate(${count * 48}, 0)">
+        svgContent += `<g transform="${translate}">
           <rect width="48" height="48" rx="6" fill="#ccc"/>
           <text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="10" fill="#000">${name}</text>
         </g>`;
-        count++;
       }
+      count++;
     }
-    
-    const totalIcons = count;
-    const perLine = Math.min(Math.max(perline, 1), 50);
-    const rows = Math.ceil(totalIcons / perLine);
-    const finalWidth = perLine * 48;
-    const finalHeight = rows * 48;
-    const actualWidth = Math.min(totalIcons, perLine) * 48;
     
     const finalSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${actualWidth}" height="${finalHeight}" viewBox="0 0 ${finalWidth} ${finalHeight}">
       <rect width="100%" height="100%" fill="${bgColor}"/>
