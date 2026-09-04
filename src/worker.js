@@ -2,7 +2,7 @@
 import icons from '../dist/icons.json' assert { type: 'json' };
 // ---- ثوابت التخطيط ----
 const ICON_SIZE = 48;                    // حجم الأيقونة الفعلي داخل الصندوق
-const PADDING = 8;                       // مسافة داخلية حول الأيقونة (8 من كل جهة)
+const PADDING = 0;                       // مسافة داخلية حول الأيقونة (8 من كل جهة)
 const GAP = 8;                           // المسافة بين صندوق وصندوق
 const BOX = ICON_SIZE + PADDING * 2;     // = 64 (حجم الصندوق كامل)
 const RADIUS = 12;                       // زوايا دائرية للصندوق
