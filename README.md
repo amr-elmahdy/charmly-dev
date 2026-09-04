@@ -6,4 +6,4 @@
 
 ![Skills](https://charmly.<subdomain>.workers.dev/?i=js,html,css,react)
 
-https://charmly.web.app/?i=html,css,js&perline=3&theme=dark
+https://charmly-dev.web.app/?i=html,css,js&perline=3&theme=dark
