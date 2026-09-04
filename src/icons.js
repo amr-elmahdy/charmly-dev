@@ -1,0 +1,7 @@
+export default {
+  js: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#F7DF1E" rx="6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#000">JS</text></svg>',
+  html: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#E34F26" rx="6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">HTML</text></svg>',
+  css: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#1572B6" rx="6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">CSS</text></svg>',
+  python: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#3776AB" rx="6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">PY</text></svg>',
+  react: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#61DAFB" rx="6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="16" fill="#000">⚛</text></svg>',
+};
