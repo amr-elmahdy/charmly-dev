@@ -1,71 +1,3 @@
-import icons from '../dist/icons.json';
-
-const iconNameList = [...new Set(Object.keys(icons).map(i => i.split('-')[0]))];
-
-const shortNames = {
-  js: 'javascript',
-  ts: 'typescript',
-  py: 'python',
-  tailwind: 'tailwindcss',
-  vue: 'vuejs',
-  go: 'golang',
-  cf: 'cloudflare',
-  wasm: 'webassembly',
-  postgres: 'postgresql',
-  k8s: 'kubernetes',
-  next: 'nextjs',
-  mongo: 'mongodb',
-  md: 'markdown',
-  ps: 'photoshop',
-  ai: 'illustrator',
-  net: 'dotnet',
-  gql: 'graphql',
-  express: 'expressjs',
-  gcp: 'googlecloud',
-  mui: 'materialui',
-  nest: 'nestjs',
-  pwsh: 'powershell',
-  ghactions: 'githubactions',
-  sklearn: 'scikitlearn',
-};
-
-const themedIcons = [
-  ...Object.keys(icons)
-  .filter(i => i.includes('-light') || i.includes('-dark'))
-  .map(i => i.split('-')[0]),
-];
-
-const ICONS_PER_LINE = 15;
-const ONE_ICON = 48;
-const SCALE = ONE_ICON / (300 - 44);
-
-function generateSvg(iconNames, perLine) {
-  const iconSvgList = iconNames.map(i => icons[i]);
-  const length = Math.min(perLine * 300, iconNames.length * 300) - 44;
-  const height = Math.ceil(iconSvgList.length / perLine) * 300 - 44;
-  const scaledHeight = height * SCALE;
-  const scaledWidth = length * SCALE;
-  
-  return `
-  <svg width="${scaledWidth}" height="${scaledHeight}" viewBox="0 0 ${length} ${height}" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1">
-    ${iconSvgList
-      .map(
-        (i, index) =>
-          `<g transform="translate(${(index % perLine) * 300}, ${Math.floor(index / perLine) * 300})">${i}</g>`
-      )
-      .join(' ')}
-  </svg>`;
-}
-
-function parseShortNames(names, theme = 'dark') {
-  return names.map(name => {
-    if (iconNameList.includes(name))
-      return name + (themedIcons.includes(name) ? `-${theme}` : '');
-    else if (name in shortNames)
-      return shortNames[name] + (themedIcons.includes(shortNames[name]) ? `-${theme}` : '');
-  });
-}
-
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -81,28 +13,62 @@ export default {
       if (theme !== 'dark' && theme !== 'light')
         return new Response('Theme must be either "light" or "dark"', { status: 400 });
       
-      const perLine = parseInt(searchParams.get('perline') || ICONS_PER_LINE);
+      const perLine = parseInt(searchParams.get('perline') || '15');
       if (isNaN(perLine) || perLine < 1 || perLine > 50)
         return new Response('Icons per line must be a number between 1 and 50', { status: 400 });
       
-      let iconShortNames = [];
-      if (iconParam === 'all') iconShortNames = iconNameList;
-      else iconShortNames = iconParam.split(',').map(s => s.trim());
+      let iconNames = [];
+      if (iconParam === 'all') {
+        // هنا نرجع كل الأيقونات (لاحقًا)
+        iconNames = ['javascript', 'typescript', 'python'];
+      } else {
+        iconNames = iconParam.split(',').map(s => s.trim());
+      }
       
-      const iconNames = parseShortNames(iconShortNames, theme);
-      const svg = generateSvg(iconNames, perLine);
+      const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
+      const perLineCount = Math.min(Math.max(perLine, 1), 50);
+      const rows = Math.ceil(iconNames.length / perLineCount);
+      const finalWidth = perLineCount * 48;
+      const finalHeight = rows * 48;
+      const actualWidth = Math.min(iconNames.length, perLineCount) * 48;
       
-      return new Response(svg, {
+      let svgContent = '';
+      let count = 0;
+      
+      for (let name of iconNames) {
+        const row = Math.floor(count / perLineCount);
+        const col = count % perLineCount;
+        const translate = `translate(${col * 48}, ${row * 48})`;
+        
+        try {
+          // نجيب الأيقونة من مجلد icons مباشرة
+          const iconRes = await fetch(`https://raw.githubusercontent.com/amrelmahdy001/charmly/main/icons/${name}.svg`);
+          if (iconRes.ok) {
+            const iconSvg = await iconRes.text();
+            svgContent += `<g transform="${translate}">${iconSvg}</g>`;
+          } else {
+            throw new Error('Icon not found');
+          }
+        } catch (err) {
+          // أيقونة بديلة
+          svgContent += `<g transform="${translate}">
+            <rect width="48" height="48" rx="6" fill="#ccc"/>
+            <text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="10" fill="#000">${name}</text>
+          </g>`;
+        }
+        count++;
+      }
+      
+      const finalSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${actualWidth}" height="${finalHeight}" viewBox="0 0 ${finalWidth} ${finalHeight}">
+        <rect width="100%" height="100%" fill="${bgColor}"/>
+        ${svgContent}
+      </svg>`;
+      
+      return new Response(finalSvg, {
         headers: {
           'Content-Type': 'image/svg+xml',
           'Cache-Control': 'public, max-age=86400'
         }
-      });
-    }
-    
-    if (path === 'api/icons') {
-      return new Response(JSON.stringify(iconNameList), {
-        headers: { 'content-type': 'application/json;charset=UTF-8' }
       });
     }
     
