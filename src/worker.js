@@ -19,23 +19,23 @@ export default {
 
       const perLineParam = searchParams.get('perline');
       const perLine = perLineParam ? parseInt(perLineParam) : null;
-      
+
       const iconNames = iconParam.split(',').map(s => s.trim()).filter(Boolean);
-      
-      // أبعاد الأيقونة مع padding
+
       const ICON_SIZE = 48;
       const PADDING = 8;
       const BOX_SIZE = ICON_SIZE + PADDING * 2; // 64
-      
-      // تحديد عدد الأيقونات في السطر
-      const perLineCount = perLine ? Math.min(Math.max(perLine, 1), 50) : iconNames.length;
-      
-      const rows = Math.ceil(iconNames.length / perLineCount);
-      const finalWidth = perLineCount * BOX_SIZE;
-      const finalHeight = rows * BOX_SIZE;
-      const actualWidth = Math.min(iconNames.length, perLineCount) * BOX_SIZE;
+      const GAP = 8; // مسافة بين الأيقونات
 
-      // ألوان الخلفية
+      // عدد الأيقونات في السطر (افتراضيًا كلهم في سطر واحد)
+      const perLineCount = perLine ? Math.min(Math.max(perLine, 1), 50) : iconNames.length;
+
+      const rows = Math.ceil(iconNames.length / perLineCount);
+
+      // حساب الأبعاد النهائية مع المسافات
+      const finalWidth = perLineCount * BOX_SIZE + (perLineCount - 1) * GAP;
+      const finalHeight = rows * BOX_SIZE + (rows - 1) * GAP;
+
       const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
       const boxBg = theme === 'light' ? '#f5f5f5' : '#2d2d3d';
       const boxStroke = theme === 'light' ? '#e0e0e0' : '#3d3d4d';
@@ -46,8 +46,10 @@ export default {
       for (let name of iconNames) {
         const row = Math.floor(count / perLineCount);
         const col = count % perLineCount;
-        const x = col * BOX_SIZE;
-        const y = row * BOX_SIZE;
+
+        // حساب الموقع مع الأخذ في الاعتبار المسافات
+        const x = col * (BOX_SIZE + GAP);
+        const y = row * (BOX_SIZE + GAP);
         const iconX = x + PADDING;
         const iconY = y + PADDING;
 
@@ -71,7 +73,7 @@ export default {
         count++;
       }
 
-      const finalSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${actualWidth}" height="${finalHeight}" viewBox="0 0 ${actualWidth} ${finalHeight}">
+      const finalSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${finalWidth}" height="${finalHeight}" viewBox="0 0 ${finalWidth} ${finalHeight}">
         <rect width="100%" height="100%" fill="${bgColor}"/>
         ${svgContent}
       </svg>`;
