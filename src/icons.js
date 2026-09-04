@@ -1,9 +1,6 @@
-import js from '../icons/js.svg';
-import html from '../icons/html.svg';
-import css from '../icons/css.svg';
-
 export default {
-  js,
-  html,
-  css,
+  javascript: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#F7DF1E"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#000">JS</text></svg>',
+  typescript: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#3178C6"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">TS</text></svg>',
+  python: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#3776AB"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#fff">PY</text></svg>',
+  react: '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" rx="6" fill="#61DAFB"/><text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="16" fill="#000">⚛</text></svg>',
 };

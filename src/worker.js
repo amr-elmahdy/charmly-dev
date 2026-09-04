@@ -1,3 +1,5 @@
+import icons from './icons.js';
+
 export default {
   async fetch(request) {
     const url = new URL(request.url);
@@ -11,20 +13,17 @@ export default {
       
       const theme = searchParams.get('t') || searchParams.get('theme') || 'dark';
       if (theme !== 'dark' && theme !== 'light')
-        return new Response('Theme must be either "light" or "dark"', { status: 400 });
+        return new Response('Theme must be either "light" or "dark"', {
+          status: 400,
+        });
       
       const perLine = parseInt(searchParams.get('perline') || '15');
       if (isNaN(perLine) || perLine < 1 || perLine > 50)
-        return new Response('Icons per line must be a number between 1 and 50', { status: 400 });
+        return new Response('Icons per line must be a number between 1 and 50', {
+          status: 400,
+        });
       
-      let iconNames = [];
-      if (iconParam === 'all') {
-        // هنا نرجع كل الأيقونات (لاحقًا)
-        iconNames = ['javascript', 'typescript', 'python'];
-      } else {
-        iconNames = iconParam.split(',').map(s => s.trim());
-      }
-      
+      const iconNames = iconParam.split(',').map(s => s.trim());
       const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
       const perLineCount = Math.min(Math.max(perLine, 1), 50);
       const rows = Math.ceil(iconNames.length / perLineCount);
@@ -40,17 +39,9 @@ export default {
         const col = count % perLineCount;
         const translate = `translate(${col * 48}, ${row * 48})`;
         
-        try {
-          // نجيب الأيقونة من مجلد icons مباشرة
-          const iconRes = await fetch(`https://raw.githubusercontent.com/amrelmahdy001/charmly/main/icons/${name}.svg`);
-          if (iconRes.ok) {
-            const iconSvg = await iconRes.text();
-            svgContent += `<g transform="${translate}">${iconSvg}</g>`;
-          } else {
-            throw new Error('Icon not found');
-          }
-        } catch (err) {
-          // أيقونة بديلة
+        if (icons[name]) {
+          svgContent += `<g transform="${translate}">${icons[name]}</g>`;
+        } else {
           svgContent += `<g transform="${translate}">
             <rect width="48" height="48" rx="6" fill="#ccc"/>
             <text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="10" fill="#000">${name}</text>
