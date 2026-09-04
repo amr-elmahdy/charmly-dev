@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <title>Charmly Icons</title>
   <script>
-    window.location.replace('https://charmly.amrelmahdy001-b28.workers.dev' + window.location.search);
+    // قراءة الـ query string ونقله للـ Worker
+    const query = window.location.search;
+    window.location.replace('https://charmly.amrelmahdy001-b28.workers.dev/icons' + query);
   </script>
 </head>
 <body>
