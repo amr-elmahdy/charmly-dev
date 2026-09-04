@@ -12,16 +12,7 @@ export default {
         return new Response("You didn't specify any icons!", { status: 400 });
       
       const theme = searchParams.get('t') || searchParams.get('theme') || 'dark';
-      if (theme !== 'dark' && theme !== 'light')
-        return new Response('Theme must be either "light" or "dark"', {
-          status: 400,
-        });
-      
       const perLine = parseInt(searchParams.get('perline') || '15');
-      if (isNaN(perLine) || perLine < 1 || perLine > 50)
-        return new Response('Icons per line must be a number between 1 and 50', {
-          status: 400,
-        });
       
       const iconNames = iconParam.split(',').map(s => s.trim());
       const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
@@ -40,6 +31,7 @@ export default {
         const translate = `translate(${col * 48}, ${row * 48})`;
         
         if (icons[name]) {
+          // نضبط حجم الأيقونة داخل الصندوق
           svgContent += `<g transform="${translate}">${icons[name]}</g>`;
         } else {
           svgContent += `<g transform="${translate}">
