@@ -12,15 +12,33 @@ export default {
         return new Response("You didn't specify any icons!", { status: 400 });
 
       const theme = searchParams.get('t') || searchParams.get('theme') || 'dark';
-      const perLine = parseInt(searchParams.get('perline') || '15');
+      if (theme !== 'dark' && theme !== 'light')
+        return new Response('Theme must be either "light" or "dark"', {
+          status: 400,
+        });
 
-      const iconNames = iconParam.split(',').map(s => s.trim());
-      const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
-      const perLineCount = Math.min(Math.max(perLine, 1), 50);
+      const perLineParam = searchParams.get('perline');
+      const perLine = perLineParam ? parseInt(perLineParam) : null;
+      
+      const iconNames = iconParam.split(',').map(s => s.trim()).filter(Boolean);
+      
+      // أبعاد الأيقونة مع padding
+      const ICON_SIZE = 48;
+      const PADDING = 8;
+      const BOX_SIZE = ICON_SIZE + PADDING * 2; // 64
+      
+      // تحديد عدد الأيقونات في السطر
+      const perLineCount = perLine ? Math.min(Math.max(perLine, 1), 50) : iconNames.length;
+      
       const rows = Math.ceil(iconNames.length / perLineCount);
-      const finalWidth = perLineCount * 48;
-      const finalHeight = rows * 48;
-      const actualWidth = Math.min(iconNames.length, perLineCount) * 48;
+      const finalWidth = perLineCount * BOX_SIZE;
+      const finalHeight = rows * BOX_SIZE;
+      const actualWidth = Math.min(iconNames.length, perLineCount) * BOX_SIZE;
+
+      // ألوان الخلفية
+      const bgColor = theme === 'light' ? '#ffffff' : '#1a1b27';
+      const boxBg = theme === 'light' ? '#f5f5f5' : '#2d2d3d';
+      const boxStroke = theme === 'light' ? '#e0e0e0' : '#3d3d4d';
 
       let svgContent = '';
       let count = 0;
@@ -28,20 +46,32 @@ export default {
       for (let name of iconNames) {
         const row = Math.floor(count / perLineCount);
         const col = count % perLineCount;
-        const translate = `translate(${col * 48}, ${row * 48})`;
+        const x = col * BOX_SIZE;
+        const y = row * BOX_SIZE;
+        const iconX = x + PADDING;
+        const iconY = y + PADDING;
 
         if (icons[name]) {
-          svgContent += `<g transform="${translate}">${icons[name]}</g>`;
+          svgContent += `
+            <g transform="translate(${x}, ${y})">
+              <rect width="${BOX_SIZE}" height="${BOX_SIZE}" rx="12" fill="${boxBg}" stroke="${boxStroke}" stroke-width="1"/>
+              <g transform="translate(${iconX}, ${iconY})">
+                ${icons[name]}
+              </g>
+            </g>
+          `;
         } else {
-          svgContent += `<g transform="${translate}">
-            <rect width="48" height="48" rx="6" fill="#ccc"/>
-            <text x="24" y="28" text-anchor="middle" font-family="Arial" font-size="10" fill="#000">${name}</text>
-          </g>`;
+          svgContent += `
+            <g transform="translate(${x}, ${y})">
+              <rect width="${BOX_SIZE}" height="${BOX_SIZE}" rx="12" fill="${boxBg}" stroke="${boxStroke}" stroke-width="1"/>
+              <text x="${BOX_SIZE/2}" y="${BOX_SIZE/2 + 5}" text-anchor="middle" font-family="Arial" font-size="12" fill="#999">${name}</text>
+            </g>
+          `;
         }
         count++;
       }
 
-      const finalSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${actualWidth}" height="${finalHeight}" viewBox="0 0 ${finalWidth} ${finalHeight}">
+      const finalSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="${actualWidth}" height="${finalHeight}" viewBox="0 0 ${actualWidth} ${finalHeight}">
         <rect width="100%" height="100%" fill="${bgColor}"/>
         ${svgContent}
       </svg>`;
