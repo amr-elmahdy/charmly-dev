@@ -126,98 +126,73 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 Here is a list of currently supported icons.
 More icons will be added soon.
 
-<style>
-  .icons-table {
-    table-layout: fixed;
-    width: 100%;
-    border-collapse: collapse;
-  }
-  .icons-table td {
-    width: 10%;
-    text-align: center;
-    vertical-align: top;
-    padding: 10px 4px;
-  }
-  .icons-table img {
-    width: 64px;
-    height: 64px;
-    display: block;
-    margin: 0 auto 6px;
-  }
-  .icons-table strong {
-    font-size: 13px;
-    display: block;
-    line-height: 1.2;
-    word-wrap: break-word;
-  }
-</style>
 
-<table class="icons-table">
+<table>
   <tbody>
-    <!-- الصف 1: لغات برمجة أساسية (10) -->
+    <!-- الصف 1: الويب الأساسية -->
     <tr>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript&perline=1" alt="JavaScript"><br><strong>JavaScript</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=typescript&perline=1" alt="TypeScript"><br><strong>TypeScript</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=python&perline=1" alt="Python"><br><strong>Python</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=java&perline=1" alt="Java"><br><strong>Java</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=kotlin&perline=1" alt="Kotlin"><br><strong>Kotlin</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=swift&perline=1" alt="Swift"><br><strong>Swift</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=go&perline=1" alt="Go"><br><strong>Go</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=rust&perline=1" alt="Rust"><br><strong>Rust</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=c&perline=1" alt="C"><br><strong>C</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=cplusplus&perline=1" alt="C++"><br><strong>C++</strong></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=html&perline=1" alt="HTML" width="64"><br><sub><b>HTML</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=css&perline=1" alt="CSS" width="64"><br><sub><b>CSS</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript&perline=1" alt="JavaScript" width="64"><br><sub><b>JavaScript</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=typescript&perline=1" alt="TypeScript" width="64"><br><sub><b>TypeScript</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=react&perline=1" alt="React" width="64"><br><sub><b>React</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vue&perline=1" alt="Vue.js" width="64"><br><sub><b>Vue.js</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=angular&perline=1" alt="Angular" width="64"><br><sub><b>Angular</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=svelte&perline=1" alt="Svelte" width="64"><br><sub><b>Svelte</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=nextjs&perline=1" alt="Next.js" width="64"><br><sub><b>Next.js</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=nodejs&perline=1" alt="Node.js" width="64"><br><sub><b>Node.js</b></sub></td>
     </tr>
-    <!-- الصف 2: لغات وأطر أمامية (10) -->
+    <!-- الصف 2: لغات برمجة متقدمة -->
     <tr>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=csharp&perline=1" alt="C#"><br><strong>C#</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=ruby&perline=1" alt="Ruby"><br><strong>Ruby</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=php&perline=1" alt="PHP"><br><strong>PHP</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=html&perline=1" alt="HTML"><br><strong>HTML</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=css&perline=1" alt="CSS"><br><strong>CSS</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=react&perline=1" alt="React"><br><strong>React</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vue&perline=1" alt="Vue.js"><br><strong>Vue.js</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=angular&perline=1" alt="Angular"><br><strong>Angular</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=svelte&perline=1" alt="Svelte"><br><strong>Svelte</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=nextjs&perline=1" alt="Next.js"><br><strong>Next.js</strong></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=python&perline=1" alt="Python" width="64"><br><sub><b>Python</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=java&perline=1" alt="Java" width="64"><br><sub><b>Java</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=kotlin&perline=1" alt="Kotlin" width="64"><br><sub><b>Kotlin</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=swift&perline=1" alt="Swift" width="64"><br><sub><b>Swift</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=go&perline=1" alt="Go" width="64"><br><sub><b>Go</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=rust&perline=1" alt="Rust" width="64"><br><sub><b>Rust</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=c&perline=1" alt="C" width="64"><br><sub><b>C</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=cplusplus&perline=1" alt="C++" width="64"><br><sub><b>C++</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=csharp&perline=1" alt="C#" width="64"><br><sub><b>C#</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=ruby&perline=1" alt="Ruby" width="64"><br><sub><b>Ruby</b></sub></td>
     </tr>
-    <!-- الصف 3: أطر خلفية وأدوات CSS (10) -->
+    <!-- الصف 3: أطر عمل وأدوات -->
     <tr>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=nodejs&perline=1" alt="Node.js"><br><strong>Node.js</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=express&perline=1" alt="Express"><br><strong>Express</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=django&perline=1" alt="Django"><br><strong>Django</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=flask&perline=1" alt="Flask"><br><strong>Flask</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=spring&perline=1" alt="Spring Boot"><br><strong>Spring Boot</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=laravel&perline=1" alt="Laravel"><br><strong>Laravel</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=tailwindcss&perline=1" alt="Tailwind CSS"><br><strong>Tailwind CSS</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=bootstrap&perline=1" alt="Bootstrap"><br><strong>Bootstrap</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=sass&perline=1" alt="Sass"><br><strong>Sass</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=graphql&perline=1" alt="GraphQL"><br><strong>GraphQL</strong></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=php&perline=1" alt="PHP" width="64"><br><sub><b>PHP</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=express&perline=1" alt="Express" width="64"><br><sub><b>Express</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=django&perline=1" alt="Django" width="64"><br><sub><b>Django</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=flask&perline=1" alt="Flask" width="64"><br><sub><b>Flask</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=spring&perline=1" alt="Spring Boot" width="64"><br><sub><b>Spring Boot</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=laravel&perline=1" alt="Laravel" width="64"><br><sub><b>Laravel</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=graphql&perline=1" alt="GraphQL" width="64"><br><sub><b>GraphQL</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=redux&perline=1" alt="Redux" width="64"><br><sub><b>Redux</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=tailwindcss&perline=1" alt="Tailwind CSS" width="64"><br><sub><b>Tailwind CSS</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=bootstrap&perline=1" alt="Bootstrap" width="64"><br><sub><b>Bootstrap</b></sub></td>
     </tr>
-    <!-- الصف 4: قواعد بيانات وDevOps (10) -->
+    <!-- الصف 4: CSS Preprocessors + قواعد بيانات + DevOps -->
     <tr>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=redux&perline=1" alt="Redux"><br><strong>Redux</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=mysql&perline=1" alt="MySQL"><br><strong>MySQL</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=postgresql&perline=1" alt="PostgreSQL"><br><strong>PostgreSQL</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=mongodb&perline=1" alt="MongoDB"><br><strong>MongoDB</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=redis&perline=1" alt="Redis"><br><strong>Redis</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=sqlite&perline=1" alt="SQLite"><br><strong>SQLite</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=docker&perline=1" alt="Docker"><br><strong>Docker</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=kubernetes&perline=1" alt="Kubernetes"><br><strong>Kubernetes</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws&perline=1" alt="AWS"><br><strong>AWS</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=azure&perline=1" alt="Azure"><br><strong>Azure</strong></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=sass&perline=1" alt="Sass" width="64"><br><sub><b>Sass</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=mysql&perline=1" alt="MySQL" width="64"><br><sub><b>MySQL</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=postgresql&perline=1" alt="PostgreSQL" width="64"><br><sub><b>PostgreSQL</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=mongodb&perline=1" alt="MongoDB" width="64"><br><sub><b>MongoDB</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=redis&perline=1" alt="Redis" width="64"><br><sub><b>Redis</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=sqlite&perline=1" alt="SQLite" width="64"><br><sub><b>SQLite</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=docker&perline=1" alt="Docker" width="64"><br><sub><b>Docker</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=kubernetes&perline=1" alt="Kubernetes" width="64"><br><sub><b>Kubernetes</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws&perline=1" alt="AWS" width="64"><br><sub><b>AWS</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=azure&perline=1" alt="Azure" width="64"><br><sub><b>Azure</b></sub></td>
     </tr>
-    <!-- الصف 5: سحابة وأدوات تطوير (10) -->
+    <!-- الصف 5: سحابة وأدوات تطوير -->
     <tr>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=googlecloud&perline=1" alt="Google Cloud"><br><strong>Google Cloud</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=firebase&perline=1" alt="Firebase"><br><strong>Firebase</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git&perline=1" alt="Git"><br><strong>Git</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=github&perline=1" alt="GitHub"><br><strong>GitHub</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=gitlab&perline=1" alt="GitLab"><br><strong>GitLab</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vscode&perline=1" alt="VS Code"><br><strong>VS Code</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=npm&perline=1" alt="npm"><br><strong>npm</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vite&perline=1" alt="Vite"><br><strong>Vite</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=webpack&perline=1" alt="Webpack"><br><strong>Webpack</strong></td>
-      <td><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=figma&perline=1" alt="Figma"><br><strong>Figma</strong></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=googlecloud&perline=1" alt="Google Cloud" width="64"><br><sub><b>Google Cloud</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=firebase&perline=1" alt="Firebase" width="64"><br><sub><b>Firebase</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git&perline=1" alt="Git" width="64"><br><sub><b>Git</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=github&perline=1" alt="GitHub" width="64"><br><sub><b>GitHub</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=gitlab&perline=1" alt="GitLab" width="64"><br><sub><b>GitLab</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vscode&perline=1" alt="VS Code" width="64"><br><sub><b>VS Code</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=npm&perline=1" alt="npm" width="64"><br><sub><b>npm</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vite&perline=1" alt="Vite" width="64"><br><sub><b>Vite</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=webpack&perline=1" alt="Webpack" width="64"><br><sub><b>Webpack</b></sub></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=figma&perline=1" alt="Figma" width="64"><br><sub><b>Figma</b></sub></td>
     </tr>
   </tbody>
 </table>
