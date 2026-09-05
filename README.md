@@ -24,42 +24,42 @@ You can use it in your GitHub profile, project README, or resume.
 ## Example
 
 ```markdown
-![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,typescript,react,nodejs,docker&perline=5)
+![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=python,typescript,react,nodejs,java&perline=5)
 ```
 
 Result:
 
-![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,typescript,react,nodejs,docker&perline=5)
+![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=python,typescript,react,nodejs,java&perline=5)
 
 ---
 
-## 🧩 Usage
+## Usage
 
 ### 1. Basic Usage
 
 ```markdown
-![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=js,html,css)
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,html,css,tailwindcss)
 ```
-![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=js,html,css)
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,html,css,tailwindcss)
 
 Replace `i=` with a comma-separated list of icon names.
 
 ### 2. Icons Per Line
 
 ```markdown
-![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,html,azure,react,angular,css&perline=3)
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,figma,azure,react,angular,npm&perline=3)
 ```
-![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,html,azure,react,angular,css&perline=3)
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,figma,azure,react,angular,npm&perline=3)
 
 ### 3. Center Icons
 
 ```html
 <p align="center">
-  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,docker,c,vim" />
+  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,gitlab,c,github" />
 </p>
 ```
 <p align="center">
-  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,docker,c,vim" />
+  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,gitlab,c,github" />
 </p>
 ---
 
@@ -98,14 +98,14 @@ charmly/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome!
 To suggest an icon, open an issue or add the SVG file directly to the `icons/` folder and submit a pull request.
 
 ---
 
-## 📝 License
+## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
@@ -116,7 +116,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-## 📦 Available Icons
+## Available Icons
 
 Here is a list of currently supported icons.
 More icons will be added soon.
