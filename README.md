@@ -1,8 +1,8 @@
+[![banner](./.github/imgs/banner.png)
 <a name="readme-top"></a>
-
 <div align="center">
 
-# 🎨 Charmly Icons
+# Charmly Icons
 
 **Generate beautiful skill icons for your GitHub README using a simple URL.**
 
@@ -14,14 +14,14 @@
 
 ---
 
-## 🚀 What is Charmly?
+## What is Charmly?
 
 Charmly is a lightweight API that generates a row of skill icons as an SVG image.
 You can use it in your GitHub profile, project README, or resume.
 
 **Powered by Cloudflare Workers ⚡**
 
-## ✨ Example
+## Example
 
 ```markdown
 ![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,typescript,react,nodejs,docker&perline=5)
@@ -40,14 +40,16 @@ Result:
 ```markdown
 ![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=js,html,css)
 ```
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=js,html,css)
 
 Replace `i=` with a comma-separated list of icon names.
 
 ### 2. Icons Per Line
 
 ```markdown
-![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,gcp,azure,react,vue,flutter&perline=3)
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,html,azure,react,angular,css&perline=3)
 ```
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,html,azure,react,angular,css&perline=3)
 
 ### 3. Center Icons
 
@@ -56,10 +58,12 @@ Replace `i=` with a comma-separated list of icon names.
   <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,docker,c,vim" />
 </p>
 ```
-
+<p align="center">
+  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,docker,c,vim" />
+</p>
 ---
 
-## 🎛️ Parameters
+## Parameters
 
 | Parameter | Description | Default |
 |-----------|--------------|---------|
@@ -68,7 +72,7 @@ Replace `i=` with a comma-separated list of icon names.
 
 ---
 
-## 🧠 How It Works
+## How It Works
 
 1. Icon SVGs are stored in the `icons/` folder.
 2. `build-icons.js` extracts `viewBox` and inner content from each SVG.
@@ -77,7 +81,7 @@ Replace `i=` with a comma-separated list of icon names.
 
 ---
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```
 charmly/
@@ -107,7 +111,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-<p align="center">Made with ❤️ by <a href="https://github.com/amrelmahdy001">amrelmahdy001</a></p>
+<p align="center">Made by <a href="https://github.com/amrelmahdy001">amrelmahdy001</a></p>
 <table align="center" border="0" cellpadding="15" style="border-collapse: collapse; width: 100%; max-width: 1200px; margin: 20px auto; text-align: center;">
 
 ---
@@ -115,9 +119,8 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 ## 📦 Available Icons
 
 Here is a list of currently supported icons.
-
-
 More icons will be added soon.
+
   <tbody>
     <!-- الصف 1 (الأيقونات 1–10) -->
     <tr>
