@@ -84,7 +84,7 @@ export default {
     return new Response(svg, {
       headers: {
         'Content-Type': 'image/svg+xml; charset=utf-8',
-        'Cache-Control': 'public, max-age=60, immutable',
+        'Cache-Control': 'public, max-age=6, immutable',
         'Access-Control-Allow-Origin': '*',
       },
     });
