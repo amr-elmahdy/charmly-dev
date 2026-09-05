@@ -1,4 +1,4 @@
-[![banner](./.github/imgs/banner.png)
+![banner](./.github/imgs/banner.png)
 <a name="readme-top"></a>
 <div align="center">
 
@@ -6,10 +6,14 @@
 
 **Generate beautiful skill icons for your GitHub README using a simple URL.**
 
-[![Live Demo](https://img.shields.io/badge/Demo-Live-brightgreen?style=for-the-badge)](https://charmly-dev.web.app/?i=javascript,react,nodejs&perline=3)
-[![GitHub Repo stars](https://img.shields.io/github/stars/amrelmahdy001/charmly?style=for-the-badge)](https://github.com/amrelmahdy001/charmly)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-C071FF?style=for-the-badge&logo=googlechrome&logoColor=white)](https://charmly-dev.web.app/)
+[![License](https://img.shields.io/badge/License-MIT-C071FF?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Version](https://img.shields.io/github/package-json/v/amrelmahdy001/charmly-dev?style=for-the-badge&color=C071FF&logo=semanticrelease&logoColor=white)](https://github.com/amrelmahdy001/charmly/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/amrelmahdy001/charmly-dev?style=for-the-badge&color=C071FF&logo=git&logoColor=white)](https://github.com/amrelmahdy001/charmly/commits)
+[![Stars](https://img.shields.io/github/stars/amrelmahdy001/charmly-dev?style=for-the-badge&color=C071FF&logo=github&logoColor=white)](https://github.com/amrelmahdy001/charmly-dev/stargazers)
 
+![README Tools](https://img.shields.io/badge/README%20Tools-C071FF?style=for-the-badge&logo=readme&logoColor=white)
+![Markdown Tools](https://img.shields.io/badge/Markdown%20Tools-C071FF?style=for-the-badge&logo=markdown&logoColor=white)
 </div>
 
 ---
@@ -24,12 +28,12 @@ You can use it in your GitHub profile, project README, or resume.
 ## Example
 
 ```markdown
-![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=python,typescript,react,nodejs,java&perline=5)
+![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=swift,typescript,react,go,flask&perline=5)
 ```
 
 Result:
 
-![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=python,typescript,react,nodejs,java&perline=5)
+![My Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=swift,typescript,react,go,flask&perline=5)
 
 ---
 
@@ -78,6 +82,7 @@ Replace `i=` with a comma-separated list of icon names.
 2. `build-icons.js` extracts `viewBox` and inner content from each SVG.
 3. Cloudflare Worker reads `dist/icons.json` and generates a combined SVG image.
 4. The image is returned with `Content-Type: image/svg+xml`.
+
 
 ---
 
