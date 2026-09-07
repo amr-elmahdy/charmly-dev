@@ -55,25 +55,82 @@ Replace `i=` with a comma-separated list of icon names.
 ```
 ![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=aws,figma,azure,react,angular,npm&perline=3)
 
-### 3. Center Icons
+### 3. Custom Icon Size
+
+```markdown
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,python,java,go&size=64&perline=2)
+```
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=javascript,python,java,go&size=64&perline=2)
+
+### 4. Custom Colors & Styling
+
+```markdown
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=react,vue,angular&bgcolor=1a1a1a&size=56&radius=8&gap=12)
+```
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=react,vue,angular&bgcolor=1a1a1a&size=56&radius=8&gap=12)
+
+### 5. Icons Without Background
+
+```markdown
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,github,gitlab&bg=false&size=48)
+```
+![Skills](https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,github,gitlab&bg=false&size=48)
+
+### 6. Center Icons
 
 ```html
 <p align="center">
-  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,gitlab,c,github" />
+  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,gitlab,c,github&size=52&radius=10" />
 </p>
 ```
 <p align="center">
-  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,gitlab,c,github" />
+  <img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=git,kubernetes,gitlab,c,github&size=52&radius=10" />
 </p>
 
 ---
 
 ## Parameters
 
-| Parameter | Description | Default |
-|-----------|--------------|---------|
-| `i` | Comma-separated icon names (required) | - |
-| `perline` | Number of icons per line (1–50) | All icons in one line |
+| Parameter | Description | Range | Default |
+|-----------|--------------|-------|---------|
+| `i` | Comma-separated icon names **(required)** | - | - |
+| `perline` | Number of icons per line | 1–50 | All icons in one line |
+| `size` | Icon box size in pixels | 16–128 | 48 |
+| `gap` | Gap between icons in pixels | 0–32 | 8 |
+| `radius` | Corner radius in pixels | 0–24 | 12 |
+| `bg` | Show background box | true/false | true |
+| `bgcolor` | Background color (hex format) | #RGB or #RRGGBB | #1a1b2e |
+
+### Parameter Examples
+
+**Size parameter:**
+```
+?i=js,html,css&size=32    # Small icons
+?i=js,html,css&size=96    # Large icons
+```
+
+**Gap parameter:**
+```
+?i=react,vue,angular&gap=0    # No space between icons
+?i=react,vue,angular&gap=20   # Large spacing
+```
+
+**Radius parameter:**
+```
+?i=js,go,rust&radius=0     # Sharp corners
+?i=js,go,rust&radius=20    # Very rounded
+```
+
+**Custom background color:**
+```
+?i=python,java&bgcolor=ff6b6b&bg=true
+?i=python,java&bgcolor=#0ea5e9&size=64
+```
+
+**Combine multiple parameters:**
+```
+?i=javascript,typescript,react&size=56&perline=3&gap=12&radius=8&bgcolor=2d3748
+```
 
 ---
 
@@ -81,9 +138,48 @@ Replace `i=` with a comma-separated list of icon names.
 
 1. Icon SVGs are stored in the `icons/` folder.
 2. `build-icons.js` extracts `viewBox` and inner content from each SVG.
-3. Cloudflare Worker reads `dist/icons.json` and generates a combined SVG image.
-4. The image is returned with `Content-Type: image/svg+xml`.
+3. Cloudflare Worker reads `dist/icons.json` and generates a customized combined SVG image.
+4. Parameters are validated and applied to control:
+   - Icon dimensions and spacing
+   - Background styling and color
+   - Layout arrangement
+5. The image is returned with `Content-Type: image/svg+xml` and cached for 60 seconds.
 
+---
+
+## Features
+
+✅ **Dynamic SVG Generation** - Icons are generated on-demand  
+✅ **Customizable Layout** - Control size, spacing, and arrangement  
+✅ **Flexible Styling** - Customize colors and corner radius  
+✅ **Rate Limiting** - Built-in protection (100 req/min per IP)  
+✅ **Caching** - 60-second cache for better performance  
+✅ **CORS Enabled** - Works across different domains  
+✅ **No Background Option** - Show icons without boxes  
+
+---
+
+## Error Handling
+
+Invalid parameters will return a 400 error with a descriptive message:
+
+```
+Invalid "size" parameter: must be a number between 16 and 128
+Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color, e.g. "ff0000" or "#f00"
+Invalid "radius" parameter: must be a number between 0 and 24
+```
+
+Missing required `i` parameter:
+
+```
+Missing "i" query parameter, e.g. ?i=js,html,css
+```
+
+Rate limit exceeded (429):
+
+```
+Too Many Requests
+```
 
 ---
 

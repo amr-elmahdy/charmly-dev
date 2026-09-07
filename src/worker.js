@@ -1,12 +1,17 @@
 import icons from '../dist/icons.json' assert { type: 'json' };
 
-// ---- Layout constants ----
-const ICON_SIZE = 48;
+// ---- Layout defaults (used when the caller doesn't pass a query param) ----
+const DEFAULT_SIZE = 48;   // icon box size in px
+const DEFAULT_GAP = 8;     // gap between boxes in px
+const DEFAULT_RADIUS = 12; // corner radius in px
+const DEFAULT_BG = true;   // draw background box by default
+const DEFAULT_BGCOLOR = '#1a1b2e'; // calm dark purple-navy
 const PADDING = 0; // can be changed (or kept at 0)
-const GAP = 8;
-const BOX = ICON_SIZE;
-const RADIUS = 12;
-const BG = '#1a1b2e'; // calm dark purple-navy
+
+// ---- Allowed ranges for new query params ----
+const SIZE_MIN = 16, SIZE_MAX = 128;
+const GAP_MIN = 0, GAP_MAX = 32;
+const RADIUS_MIN = 0, RADIUS_MAX = 24;
 
 // ---- Rate limiting config ----
 const RATE_LIMIT_MAX = 100; // max requests per IP per window
@@ -39,14 +44,14 @@ function cleanupRateLimitStore(now) {
 function isRateLimited(ip) {
   const now = Date.now();
   cleanupRateLimitStore(now);
-  
+
   const entry = rateLimitStore.get(ip);
-  
+
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
     rateLimitStore.set(ip, { count: 1, windowStart: now });
     return false;
   }
-  
+
   entry.count += 1;
   return entry.count > RATE_LIMIT_MAX;
 }
@@ -55,56 +60,104 @@ function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
-// Build a single icon inside a clipped rounded box
-function renderIcon(name, x, y, index) {
+// Validate a numeric query param against [min, max].
+// - paramValue === null (param not present) => returns defaultValue
+// - present but not a finite number, or out of range => returns null (caller
+//   should respond with 400)
+function validateNumber(paramValue, min, max, defaultValue) {
+  if (paramValue === null) return defaultValue;
+
+  const trimmed = paramValue.trim();
+  if (trimmed === '') return null;
+
+  const num = Number(trimmed);
+  if (!Number.isFinite(num)) return null;
+  if (num < min || num > max) return null;
+
+  return num;
+}
+
+// Validate a hex color string (3 or 6 hex digits, with or without leading #).
+// Returns a normalized "#rrggbb"/"#rgb" string, or null if invalid.
+function validateHexColor(color) {
+  if (color === null) return null;
+
+  const trimmed = color.trim().replace(/^#/, '');
+  if (!/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(trimmed)) return null;
+
+  return `#${trimmed}`;
+}
+
+// Validate a boolean-ish query param ("true"/"false", case-insensitive).
+// - paramValue === null (param not present) => returns defaultValue
+// - anything else that isn't "true"/"false" => returns null (invalid)
+function validateBoolean(paramValue, defaultValue) {
+  if (paramValue === null) return defaultValue;
+
+  const lower = paramValue.trim().toLowerCase();
+  if (lower === 'true') return true;
+  if (lower === 'false') return false;
+
+  return null;
+}
+
+// Build a single icon inside a clipped rounded box.
+// All layout/style values are passed in as params (no globals) so concurrent
+// requests with different query params never interfere with each other.
+function renderIcon(name, x, y, index, size, radius, bg, bgcolor) {
   const icon = icons[name];
   if (!icon) return '';
-  
+
   const clipId = `clip-${index}`; // unique id per box
-  
+
+  // icon.viewBox is produced by our own build-icons.js step (always plain
+  // numbers/spaces, e.g. "0 0 24 24") — it's not user input, so escaping it
+  // here is unnecessary work on a per-icon, per-request hot path.
+  const innerSvg =
+    `<svg x="${PADDING}" y="${PADDING}" width="${size}" height="${size}" ` +
+    `viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>`;
+
+  if (!bg) {
+    // No background requested: skip the rect and the clipPath entirely,
+    // render the icon directly.
+    return `<g transform="translate(${x}, ${y})">${innerSvg}</g>`;
+  }
+
   return (
     `<g transform="translate(${x}, ${y})">` +
-    `<rect width="${BOX}" height="${BOX}" rx="${RADIUS}" fill="${BG}"/>` +
-    `<clipPath id="${clipId}"><rect width="${BOX}" height="${BOX}" rx="${RADIUS}"/></clipPath>` +
-    `<g clip-path="url(#${clipId})">` +
-    // icon.viewBox is produced by our own build-icons.js step (always plain
-    // numbers/spaces, e.g. "0 0 24 24") — it's not user input, so escaping it
-    // here is unnecessary work on a per-icon, per-request hot path.
-    // escapeAttr() itself is left untouched/unremoved in case a future
-    // attribute here does need to escape user-influenced data.
-    `<svg x="${PADDING}" y="${PADDING}" width="${ICON_SIZE}" height="${ICON_SIZE}" ` +
-    `viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>` +
-    `</g>` +
+    `<rect width="${size}" height="${size}" rx="${radius}" fill="${escapeAttr(bgcolor)}"/>` +
+    `<clipPath id="${clipId}"><rect width="${size}" height="${size}" rx="${radius}"/></clipPath>` +
+    `<g clip-path="url(#${clipId})">${innerSvg}</g>` +
     `</g>`
   );
 }
 
-function buildSvg(names, perline) {
+function buildSvg(names, perline, size, gap, radius, bg, bgcolor) {
   const valid = names.filter((n) => icons[n]);
-  
+
   if (valid.length === 0) {
     return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="48">` +
       `<text x="8" y="28" font-family="monospace" font-size="13" fill="#e05252">` +
       `No valid icons found</text></svg>`;
   }
-  
+
   const columns = perline && perline > 0 ? Math.min(perline, valid.length) : valid.length;
   const rows = Math.ceil(valid.length / columns);
-  
-  const width = columns * BOX + (columns - 1) * GAP;
-  const height = rows * BOX + (rows - 1) * GAP;
-  
+
+  const width = columns * size + (columns - 1) * gap;
+  const height = rows * size + (rows - 1) * gap;
+
   // Collect parts in an array and join once at the end instead of repeated
   // string += concatenation inside the loop (faster, and reads more clearly).
   const parts = [];
   valid.forEach((name, idx) => {
     const col = idx % columns;
     const row = Math.floor(idx / columns);
-    const x = col * (BOX + GAP);
-    const y = row * (BOX + GAP);
-    parts.push(renderIcon(name, x, y, idx));
+    const x = col * (size + gap);
+    const y = row * (size + gap);
+    parts.push(renderIcon(name, x, y, idx, size, radius, bg, bgcolor));
   });
-  
+
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" ` +
     `viewBox="0 0 ${width} ${height}" fill="none">${parts.join('')}</svg>`
@@ -114,11 +167,11 @@ function buildSvg(names, perline) {
 export default {
   async fetch(request) {
     const url = new URL(request.url);
-    
+
     if (url.pathname !== '/icons') {
       return new Response('Not found', { status: 404 });
     }
-    
+
     // ---- Simple per-IP rate limiting ----
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     if (isRateLimited(ip)) {
@@ -130,19 +183,68 @@ export default {
         },
       });
     }
-    
+
     const iParam = url.searchParams.get('i') || '';
     const names = iParam.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-    
+
     if (names.length === 0) {
       return new Response('Missing "i" query parameter, e.g. ?i=js,html,css', { status: 400 });
     }
-    
+
     const perlineParam = url.searchParams.get('perline');
     const perline = perlineParam ? parseInt(perlineParam, 10) : 0; // 0 => single row
-    
-    const svg = buildSvg(names, perline);
-    
+
+    // ---- Validate new optional params (all default to prior hardcoded behavior) ----
+    const size = validateNumber(url.searchParams.get('size'), SIZE_MIN, SIZE_MAX, DEFAULT_SIZE);
+    if (size === null) {
+      return new Response(
+        `Invalid "size" parameter: must be a number between ${SIZE_MIN} and ${SIZE_MAX}`,
+        { status: 400 }
+      );
+    }
+
+    const gap = validateNumber(url.searchParams.get('gap'), GAP_MIN, GAP_MAX, DEFAULT_GAP);
+    if (gap === null) {
+      return new Response(
+        `Invalid "gap" parameter: must be a number between ${GAP_MIN} and ${GAP_MAX}`,
+        { status: 400 }
+      );
+    }
+
+    const radius = validateNumber(url.searchParams.get('radius'), RADIUS_MIN, RADIUS_MAX, DEFAULT_RADIUS);
+    if (radius === null) {
+      return new Response(
+        `Invalid "radius" parameter: must be a number between ${RADIUS_MIN} and ${RADIUS_MAX}`,
+        { status: 400 }
+      );
+    }
+
+    const bg = validateBoolean(url.searchParams.get('bg'), DEFAULT_BG);
+    if (bg === null) {
+      return new Response(
+        `Invalid "bg" parameter: must be "true" or "false"`,
+        { status: 400 }
+      );
+    }
+
+    // bgcolor only matters (and is only validated) when bg=true.
+    let bgcolor = DEFAULT_BGCOLOR;
+    if (bg) {
+      const bgcolorParam = url.searchParams.get('bgcolor');
+      if (bgcolorParam !== null) {
+        const validated = validateHexColor(bgcolorParam);
+        if (validated === null) {
+          return new Response(
+            `Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color, e.g. "ff0000" or "#f00"`,
+            { status: 400 }
+          );
+        }
+        bgcolor = validated;
+      }
+    }
+
+    const svg = buildSvg(names, perline, size, gap, radius, bg, bgcolor);
+
     // Short max-age: chosen over `no-cache` because there's no ETag/Last-Modified
     // validator here, so `no-cache` would force a full re-fetch on every load
     // anyway (no 304s possible) — it buys nothing over max-age=0. A 60s
@@ -160,7 +262,7 @@ export default {
       'Cache-Control': 'public, max-age=60',
       'Access-Control-Allow-Origin': '*',
     };
-    
+
     return new Response(svg, { headers });
   },
 };
