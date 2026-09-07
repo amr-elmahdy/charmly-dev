@@ -293,8 +293,8 @@ Total icons: **150**. Use the `id` shown next to each icon in your API call, e.g
       <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=styledcomponents&perline=1" alt="styledcomponents" width="48" height="48"></td>
     </tr>
     <tr>
-      <td align="center"><code>emotion</code></td>
-      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=emotion&perline=1" alt="emotion" width="48" height="48"></td>
+      <td align="center"><code>solidjs</code></td>
+      <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=solidjs&perline=1" alt="solidjs" width="48" height="48"></td>
       <td align="center"><code>framermotion</code></td>
       <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=framermotion&perline=1" alt="framermotion" width="48" height="48"></td>
       <td align="center"><code>storybook</code></td>
