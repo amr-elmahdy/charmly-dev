@@ -366,11 +366,20 @@ Total icons: **150**. Use the `id` shown next to each icon in your API call, e.g
     <tr>
       <td align="center"><code>nim</code></td>
       <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=nim&perline=1" alt="nim" width="48" height="48"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
+  <td align="center"><code>solidity</code></td>
+  <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=solidity&perline=1" alt="solidity" width="48" height="48"></td>
+  <td align="center"><code>bash</code></td>
+  <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=bash&perline=1" alt="bash" width="48" height="48"></td>
+  </tr>
+  <tr>
+  <td align="center"><code>powershell</code></td>
+  <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=powershell&perline=1" alt="powershell" width="48" height="48"></td>
+  <td></td>
+  <td></td>
+   <td></td>
+  <td></td>
     </tr>
+    
   </tbody>
 </table>
 
@@ -575,6 +584,14 @@ Total icons: **150**. Use the `id` shown next to each icon in your API call, e.g
       <td></td>
       <td></td>
     </tr>
+    <tr>
+  <td align="center"><code>vim</code></td>
+  <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=vim&perline=1" alt="vim" width="48" height="48"></td>
+  <td align="center"><code>stackoverflow</code></td>
+  <td align="center"><img src="https://charmly.amrelmahdy001-b28.workers.dev/icons?i=stackoverflow&perline=1" alt="stackoverflow" width="48" height="48"></td>
+  <td></td>
+  <td></td>
+</tr>
   </tbody>
 </table>
 
