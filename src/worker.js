@@ -1,5 +1,4 @@
-import icons from '../dist/icons.json'
-assert { type: 'json' };
+import icons from '../dist/icons.json' assert { type: 'json' };
 
 // ---- Layout defaults (used when the caller doesn't pass a query param) ----
 const DEFAULT_SIZE = 48; // icon box size in px
