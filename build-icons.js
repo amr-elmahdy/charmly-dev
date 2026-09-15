@@ -26,25 +26,79 @@ function extractInner(raw) {
   return raw.slice(openTagEnd + 1, closeTagStart).trim();
 }
 
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// بنعمل namespacing لكل الـ IDs جوه الأيقونة عشان لما نجمع
+// أكتر من أيقونة في SVG واحد، مايحصلش تعارض بينهم (زي id="a"
+// اللي بيتكرر في كل أيقونة تقريبًا). بنضيف prefix فريد لكل أيقونة
+// وبنحدّث كل المراجع (#id) في الـ fill, clip-path, filter, href, إلخ.
+function namespaceIds(content, prefix) {
+  // نجمع كل الـ IDs المعرّفة جوه الأيقونة
+  const idMatches = [...content.matchAll(/\bid=["']([^"']+)["']/g)];
+  const ids = [...new Set(idMatches.map((m) => m[1]))];
+  
+  if (ids.length === 0) return content;
+  
+  let result = content;
+  
+  for (const id of ids) {
+    const escaped = escapeRegex(id);
+    const newId = `${prefix}${id}`;
+    
+    // 1. نغير اسم التعريف نفسه
+    result = result.replace(
+      new RegExp(`\\bid=["']${escaped}["']`, 'g'),
+      `id="${newId}"`
+    );
+    
+    // 2. نحدث url(#id) في الفلاتر والـ fills والـ clip-paths
+    result = result.replace(
+      new RegExp(`url\\(\\s*#${escaped}\\s*\\)`, 'g'),
+      `url(#${newId})`
+    );
+    
+    // 3. نحدث xlink:href="#id" (SVG 1.1)
+    result = result.replace(
+      new RegExp(`xlink:href=["']#${escaped}["']`, 'g'),
+      `xlink:href="#${newId}"`
+    );
+    
+    // 4. نحدث href="#id" (SVG 2.0)
+    result = result.replace(
+      new RegExp(`\\bhref=["']#${escaped}["']`, 'g'),
+      `href="#${newId}"`
+    );
+  }
+  
+  return result;
+}
+
 const icons = {};
 const files = fs.readdirSync(iconsDir);
 let skipped = 0;
 
 for (const file of files) {
   if (!file.endsWith('.svg')) continue;
-
+  
   const name = file.replace('.svg', '').toLowerCase();
   const raw = fs.readFileSync(path.join(iconsDir, file), 'utf8');
-
+  
   const viewBox = extractViewBox(raw);
-  const content = extractInner(raw);
-
+  let content = extractInner(raw);
+  
   if (!content) {
     console.warn(`⚠️  تجاهلت "${file}": مش قادر أفصل محتوى الـ SVG.`);
     skipped++;
     continue;
   }
-
+  
+  // بنعمل namespacing للـ IDs قبل التخزين عشان نمنع التعارض
+  // لما أكتر من أيقونة تتجمع في SVG واحد
+  const prefix = `i-${name}-`;
+  content = namespaceIds(content, prefix);
+  
   // بنخزن viewBox + المحتوى بس، مش الملف كامل
   icons[name] = { viewBox, content };
 }
