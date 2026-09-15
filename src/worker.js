@@ -136,8 +136,9 @@ function renderIcon(name, x, y, index, size, radius, bg, bgcolor) {
   // numbers/spaces, e.g. "0 0 24 24") — it's not user input, so escaping it
   // here is unnecessary work on a per-icon, per-request hot path.
   const innerSvg =
-    `<svg x="${PADDING}" y="${PADDING}" width="${size}" height="${size}" ` +
-    `viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>`;
+  `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
+  `x="${PADDING}" y="${PADDING}" width="${size}" height="${size}" ` +
+  `viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>`;
   
   if (!bg) {
     // No background requested: skip the rect and the clipPath entirely,
@@ -184,9 +185,10 @@ function buildSvg(names, perline, size, gap, radius, bg, bgcolor) {
   });
   
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" ` +
-    `viewBox="0 0 ${width} ${height}" fill="none">${parts.join('')}</svg>`
-  );
+  `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
+  `width="${width}" height="${height}" ` +
+  `viewBox="0 0 ${width} ${height}" fill="none">${parts.join('')}</svg>`
+);
 }
 
 export default {
