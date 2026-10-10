@@ -21,7 +21,19 @@ const RATE_LIMIT_MAX = 100; // max requests per IP per window
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute window
 const RATE_LIMIT_CLEANUP_MS = 5 * 60_000; // sweep stale entries every 5 min
 
-const MAX_ICONS = 50; // Maximum number of icons allowed in a single request
+const MAX_ICONS = 50; 
+
+// ---- Card layout constants ----
+const CARD_WIDTH = 600;
+const CARD_HEIGHT = 200;
+const CARD_IMAGE_SIZE = 200;
+const CARD_RADIUS = 16;
+const CARD_TEXT_PADDING = 28;
+const CARD_TEXT_X = CARD_IMAGE_SIZE + CARD_TEXT_PADDING;
+const CARD_DEFAULT_ACCENT = '#5865F2'; // fallback accent color
+const CARD_DEFAULT_END = '#1a1f2e'; // dark blue-gray (right side)
+
+// Maximum number of icons allowed in a single request
 // In-memory store: ip -> { count, windowStart }
 // NOTE: this lives in a single Worker isolate's memory (no KV/Durable Objects),
 // so it is a best-effort, per-isolate limiter rather than a globally accurate
@@ -120,7 +132,99 @@ function validateBoolean(paramValue, defaultValue) {
   
   return null;
 }
+// ---------- Card Helpers ----------
 
+// Escape a string for safe use inside XML text content or attributes.
+function escapeXml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+// Split text into lines that fit the given character budget,
+// with optional truncation and ellipsis on the last line.
+function wrapText(text, maxCharsPerLine, maxLines) {
+  if (!text) return [];
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = '';
+  
+  for (const word of words) {
+    const test = current ? current + ' ' + word : word;
+    if (test.length > maxCharsPerLine && current) {
+      lines.push(current);
+      if (lines.length === maxLines) break;
+      current = word;
+    } else {
+      current = test;
+    }
+  }
+  if (current && lines.length < maxLines) lines.push(current);
+  
+  // Add ellipsis if the text was truncated
+  const fullLength = words.join(' ').length;
+  const shownLength = lines.join(' ').length;
+  if (lines.length === maxLines && shownLength < fullLength) {
+    const last = lines[maxLines - 1];
+    lines[maxLines - 1] =
+      last.length > maxCharsPerLine - 3 ?
+      last.substring(0, maxCharsPerLine - 3) + '...' :
+      last + '...';
+  }
+  
+  return lines;
+}
+
+// Generate the SVG card markup.
+function generateCard({ title, description, imageUrl, accent }) {
+  const accentColor = accent || CARD_DEFAULT_ACCENT;
+  const endColor = CARD_DEFAULT_END;
+  
+  // Truncate long titles (about 26 characters fit at 26px bold)
+  const safeTitle = title.length > 26 ? title.slice(0, 24) + '...' : title;
+  
+  // Description: about 48 chars per line, up to 4 lines
+  const descLines = wrapText(description, 48, 4);
+  
+  let descSvg = '';
+  const descStartY = 118;
+  const descLineHeight = 22;
+  const fontStack =
+    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+  
+  descLines.forEach((line, i) => {
+    descSvg += `<text x="${CARD_TEXT_X}" y="${
+      descStartY + i * descLineHeight
+    }" font-family="${fontStack}" font-size="14" fill="#a8b0c0">${escapeXml(
+      line
+    )}</text>`;
+  });
+  
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}">
+  <defs>
+    <linearGradient id="cardBg" x1="${CARD_IMAGE_SIZE}" y1="0" x2="${CARD_WIDTH}" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="${escapeXml(accentColor)}"/>
+      <stop offset="100%" stop-color="${escapeXml(endColor)}"/>
+    </linearGradient>
+    <clipPath id="cardClip">
+      <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="${CARD_RADIUS}"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#cardClip)">
+    <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="url(#cardBg)"/>
+    <image href="${escapeXml(
+      imageUrl
+    )}" x="0" y="0" width="${CARD_IMAGE_SIZE}" height="${CARD_IMAGE_SIZE}" preserveAspectRatio="xMidYMid slice"/>
+    <text x="${CARD_TEXT_X}" y="70" font-family="${fontStack}" font-size="26" font-weight="700" fill="#ffffff">${escapeXml(
+    safeTitle
+  )}</text>
+    ${descSvg}
+  </g>
+</svg>`;
+}
 // Build a single icon inside a clipped rounded box.
 // All layout/style values are passed in as params (no globals) so concurrent
 // requests with different query params never interfere with each other.
@@ -194,12 +298,8 @@ function buildSvg(names, perline, size, gap, radius, bg, bgcolor) {
 export default {
   async fetch(request) {
     const url = new URL(request.url);
-    
-    if (url.pathname !== '/icons') {
-      return new Response('Not found', { status: 404 });
-    }
-    
-    // ---- Simple per-IP rate limiting ----
+
+    // ---- Simple per-IP rate limiting (applies to all routes) ----
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     if (isRateLimited(ip)) {
       return new Response('Too Many Requests', {
@@ -210,51 +310,119 @@ export default {
         },
       });
     }
-    
-    const iParam = url.searchParams.get('i') || '';
-    const names = iParam.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-    
-    if (names.length === 0) {
-      return new Response('Missing "i" query parameter, e.g. ?i=js,html,css', { status: 400 });
+
+    // ---- Route: /card ----
+    if (url.pathname === '/card') {
+      const title = (url.searchParams.get('title') || '').trim();
+      const description = (url.searchParams.get('desc') || '').trim();
+      const imageUrl = (url.searchParams.get('img') || '').trim();
+      const accentParam = url.searchParams.get('accent');
+
+      if (!title || !imageUrl) {
+        return new Response(
+          'Missing required parameters: "title" and "img" are required. Example: /card?title=My+Game&desc=...&img=https://...',
+          { status: 400 }
+        );
+      }
+
+      let accent = null;
+      if (accentParam) {
+        const validated = validateHexColor(accentParam);
+        if (validated === null) {
+          return new Response('Invalid "accent" color parameter', {
+            status: 400,
+          });
+        }
+        accent = validated;
+      }
+
+      const svg = generateCard({ title, description, imageUrl, accent });
+
+      return new Response(svg, {
+        headers: {
+          'Content-Type': 'image/svg+xml; charset=utf-8',
+          'Cache-Control': 'public, max-age=3600',
+          'Access-Control-Allow-Origin': '*',
+          'X-Content-Type-Options': 'nosniff',
+        },
+      });
     }
+
+    // ---- Route: /icons ----
+    if (url.pathname !== '/icons') {
+      return new Response('Not found', { status: 404 });
+    }
+
+    const iParam = url.searchParams.get('i') || '';
+    const names = iParam
+      .split(',')
+      .map((s) => s.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (names.length === 0) {
+      return new Response(
+        'Missing "i" query parameter, e.g. ?i=js,html,css',
+        { status: 400 }
+      );
+    }
+
     if (names.length > MAX_ICONS) {
       return new Response(
-        `Too many icons requested: max ${MAX_ICONS}, got ${names.length}`, { status: 400 }
+        `Too many icons requested: max ${MAX_ICONS}, got ${names.length}`,
+        { status: 400 }
       );
     }
+
     const perlineParam = url.searchParams.get('perline');
-    const perline = perlineParam ? parseInt(perlineParam, 10) : 0; // 0 => single row
-    
-    // ---- Validate new optional params (all default to prior hardcoded behavior) ----
-    const size = validateNumber(url.searchParams.get('size'), SIZE_MIN, SIZE_MAX, DEFAULT_SIZE);
+    const perline = perlineParam ? parseInt(perlineParam, 10) : 0;
+
+    const size = validateNumber(
+      url.searchParams.get('size'),
+      SIZE_MIN,
+      SIZE_MAX,
+      DEFAULT_SIZE
+    );
     if (size === null) {
       return new Response(
-        `Invalid "size" parameter: must be a number between ${SIZE_MIN} and ${SIZE_MAX}`, { status: 400 }
+        `Invalid "size" parameter: must be a number between ${SIZE_MIN} and ${SIZE_MAX}`,
+        { status: 400 }
       );
     }
-    
-    const gap = validateNumber(url.searchParams.get('gap'), GAP_MIN, GAP_MAX, DEFAULT_GAP);
+
+    const gap = validateNumber(
+      url.searchParams.get('gap'),
+      GAP_MIN,
+      GAP_MAX,
+      DEFAULT_GAP
+    );
     if (gap === null) {
       return new Response(
-        `Invalid "gap" parameter: must be a number between ${GAP_MIN} and ${GAP_MAX}`, { status: 400 }
+        `Invalid "gap" parameter: must be a number between ${GAP_MIN} and ${GAP_MAX}`,
+        { status: 400 }
       );
     }
-    
-    const radius = validateNumber(url.searchParams.get('radius'), RADIUS_MIN, RADIUS_MAX, DEFAULT_RADIUS);
+
+    const radius = validateNumber(
+      url.searchParams.get('radius'),
+      RADIUS_MIN,
+      RADIUS_MAX,
+      DEFAULT_RADIUS
+    );
     if (radius === null) {
       return new Response(
-        `Invalid "radius" parameter: must be a number between ${RADIUS_MIN} and ${RADIUS_MAX}`, { status: 400 }
+        `Invalid "radius" parameter: must be a number between ${RADIUS_MIN} and ${RADIUS_MAX}`,
+        { status: 400 }
       );
     }
-    
+
     const bg = validateBoolean(url.searchParams.get('bg'), DEFAULT_BG);
     if (bg === null) {
       return new Response(
-        `Invalid "bg" parameter: must be "true" or "false"`, { status: 400 }
+        'Invalid "bg" parameter: must be "true" or "false"',
+        { status: 400 }
       );
     }
-    
-    // bgcolor only matters (and is only validated) when bg=true.
+
     let bgcolor = DEFAULT_BGCOLOR;
     if (bg) {
       const bgcolorParam = url.searchParams.get('bgcolor');
@@ -262,39 +430,24 @@ export default {
         const validated = validateHexColor(bgcolorParam);
         if (validated === null) {
           return new Response(
-            `Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color, e.g. "ff0000" or "#f00"`, { status: 400 }
+            'Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color, e.g. "ff0000" or "#f00"',
+            { status: 400 }
           );
         }
         bgcolor = validated;
       }
     }
-    
+
     const svg = buildSvg(names, perline, size, gap, radius, bg, bgcolor);
-    
-    // Short max-age: chosen over `no-cache` because there's no ETag/Last-Modified
-    // validator here, so `no-cache` would force a full re-fetch on every load
-    // anyway (no 304s possible) — it buys nothing over max-age=0. A 60s
-    // max-age gives the browser (and GitHub's camo image proxy for READMEs)
-    // a small real caching window, while keeping icon updates visible within
-    // a minute — a reasonable balance for a public, actively-developed project.
-    //
-    // Cache-Tag intentionally removed for now: it has no effect on the Free
-    // plan / workers.dev (tag-based purging is a paid-plan zone feature and
-    // workers.dev isn't a zone at all). Re-introduce it — together with a
-    // longer max-age — once this is served from a custom domain on a plan
-    // that supports Cache-Tag purging (see notes below).
+
+    // Short max-age during active development. Will be raised later.
     const headers = {
       'Content-Type': 'image/svg+xml; charset=utf-8',
       'Cache-Control': 'public, max-age=60',
       'Access-Control-Allow-Origin': '*',
-      // REVIEW ADDITION: harmless, standard hardening header — tells any
-      // browser that somehow receives this response outside an <img>/camo
-      // context not to MIME-sniff the body into something other than SVG.
-      // Doesn't change status codes, body, or any existing header, so it's
-      // safe for backward compatibility.
       'X-Content-Type-Options': 'nosniff',
     };
-    
+
     return new Response(svg, { headers });
   },
 };
