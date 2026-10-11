@@ -1,50 +1,30 @@
 import icons from '../dist/icons.json' assert { type: 'json' };
 
-// ---- Layout defaults (used when the caller doesn't pass a query param) ----
-const DEFAULT_SIZE = 48; // icon box size in px
-const DEFAULT_GAP = 8; // gap between boxes in px
-const DEFAULT_RADIUS = 12; // corner radius in px
-const DEFAULT_BG = true; // draw background box by default
-const DEFAULT_BGCOLOR = '#1a1b2e'; // calm dark purple-navy
-const PADDING = 0; // can be changed (or kept at 0)
+// ============================================================
+// ICON DEFAULTS
+// ============================================================
+const DEFAULT_SIZE = 48;
+const DEFAULT_GAP = 8;
+const DEFAULT_RADIUS = 12;
+const DEFAULT_BG = true;
+const DEFAULT_BGCOLOR = '#1a1b2e';
+const PADDING = 0;
 
-// ---- Allowed ranges for new query params ----
-const SIZE_MIN = 16,
-  SIZE_MAX = 128;
-const GAP_MIN = 0,
-  GAP_MAX = 32;
-const RADIUS_MIN = 0,
-  RADIUS_MAX = 24;
+const SIZE_MIN = 16, SIZE_MAX = 128;
+const GAP_MIN = 0, GAP_MAX = 32;
+const RADIUS_MIN = 0, RADIUS_MAX = 24;
 
-// ---- Rate limiting config ----
-const RATE_LIMIT_MAX = 100; // max requests per IP per window
-const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute window
-const RATE_LIMIT_CLEANUP_MS = 5 * 60_000; // sweep stale entries every 5 min
+// ============================================================
+// RATE LIMITING
+// ============================================================
+const RATE_LIMIT_MAX = 100;
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_CLEANUP_MS = 5 * 60_000;
+const MAX_ICONS = 50;
 
-const MAX_ICONS = 50; 
-
-// ---- Card layout constants ----
-const CARD_WIDTH = 600;
-const CARD_HEIGHT = 200;
-const CARD_IMAGE_SIZE = 200;
-const CARD_RADIUS = 16;
-const CARD_TEXT_PADDING = 28;
-const CARD_TEXT_X = CARD_IMAGE_SIZE + CARD_TEXT_PADDING;
-const CARD_DEFAULT_ACCENT = '#5865F2'; // fallback accent color
-const CARD_DEFAULT_END = '#1a1f2e'; // dark blue-gray (right side)
-
-// Maximum number of icons allowed in a single request
-// In-memory store: ip -> { count, windowStart }
-// NOTE: this lives in a single Worker isolate's memory (no KV/Durable Objects),
-// so it is a best-effort, per-isolate limiter rather than a globally accurate
-// one — Cloudflare may spin up multiple isolates across colos, each with its
-// own counters. That's an intentional trade-off for simplicity, and it still
-// meaningfully throttles a single abusive client hammering one isolate.
 const rateLimitStore = new Map();
 let lastCleanup = Date.now();
 
-// Periodically drop stale entries so the Map doesn't grow unbounded on a
-// long-lived (warm) isolate.
 function cleanupRateLimitStore(now) {
   if (now - lastCleanup < RATE_LIMIT_CLEANUP_MS) return;
   for (const [ip, entry] of rateLimitStore) {
@@ -55,86 +35,101 @@ function cleanupRateLimitStore(now) {
   lastCleanup = now;
 }
 
-// Fixed-window counter per IP. Returns false once the caller is over budget
-// for the current window.
 function isRateLimited(ip) {
   const now = Date.now();
   cleanupRateLimitStore(now);
-  
   const entry = rateLimitStore.get(ip);
-  
   if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
     rateLimitStore.set(ip, { count: 1, windowStart: now });
     return false;
   }
-  
   entry.count += 1;
   return entry.count > RATE_LIMIT_MAX;
 }
 
+// ============================================================
+// VALIDATION HELPERS
+// ============================================================
 function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
-// REVIEW FIX: `icons` is a plain object, so a bare `icons[name]` / truthiness
-// check (e.g. `if (icons[name])`) can accidentally succeed for inherited
-// Object.prototype members such as "constructor", "toString", "__proto__",
-// or "hasOwnProperty" — none of these are real icons, but they are truthy
-// property accesses, so they used to slip past the "does this icon exist"
-// check and produce a broken box (viewBox="undefined", literal "undefined"
-// content) instead of being treated as an invalid/unknown icon name like any
-// other typo. This helper makes "does this icon exist" an explicit own-
-// property check, which is the correct and safe way to test membership on a
-// plain object keyed by untrusted input. This does not change behavior for
-// any real icon name — it only makes the small set of JS-builtin property
-// names behave the same as any other unknown icon name (silently skipped).
 function hasIcon(name) {
   return Object.prototype.hasOwnProperty.call(icons, name);
 }
 
-// Validate a numeric query param against [min, max].
-// - paramValue === null (param not present) => returns defaultValue
-// - present but not a finite number, or out of range => returns null (caller
-//   should respond with 400)
+function findFirstIcon(names) {
+  for (const n of names) if (hasIcon(n)) return n;
+  return null;
+}
+
 function validateNumber(paramValue, min, max, defaultValue) {
   if (paramValue === null) return defaultValue;
-  
   const trimmed = paramValue.trim();
   if (trimmed === '') return null;
-  
   const num = Number(trimmed);
   if (!Number.isFinite(num)) return null;
   if (num < min || num > max) return null;
-  
   return num;
 }
 
-// Validate a hex color string (3 or 6 hex digits, with or without leading #).
-// Returns a normalized "#rrggbb"/"#rgb" string, or null if invalid.
 function validateHexColor(color) {
   if (color === null) return null;
-  
   const trimmed = color.trim().replace(/^#/, '');
   if (!/^([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(trimmed)) return null;
-  
   return `#${trimmed}`;
 }
 
-// Validate a boolean-ish query param ("true"/"false", case-insensitive).
-// - paramValue === null (param not present) => returns defaultValue
-// - anything else that isn't "true"/"false" => returns null (invalid)
 function validateBoolean(paramValue, defaultValue) {
   if (paramValue === null) return defaultValue;
-  
   const lower = paramValue.trim().toLowerCase();
   if (lower === 'true') return true;
   if (lower === 'false') return false;
-  
   return null;
 }
-// ---------- Card Helpers ----------
 
-// Escape a string for safe use inside XML text content or attributes.
+// ============================================================
+// CARD CONSTANTS
+// ============================================================
+const CARD_WIDTH = 640;
+const CARD_HEIGHT = 240;
+const CARD_IMAGE_SIZE = 240;
+const CARD_RADIUS = 20;
+const CARD_TEXT_X = CARD_IMAGE_SIZE + 24; // 264
+const CARD_PADDING_RIGHT = 24;
+const CARD_DEFAULT_ACCENT = '#5865F2';
+const CARD_DEFAULT_END = '#1a1d2e';
+const CARD_FONT_STACK =
+  "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
+
+// Vertical layout
+const CARD_TOPRIGHT_BASELINE = 48;
+const CARD_TITLE_BASELINE = 78;
+const CARD_DESC_START_Y = 112;
+const CARD_DESC_LINE_HEIGHT = 22;
+const CARD_DESC_MAX_LINES = 3;
+const CARD_TAGS_Y = 174;
+const CARD_TAGS_HEIGHT = 22;
+const CARD_PLATFORM_ICON_SIZE = 20;
+const CARD_PLATFORM_ICON_Y = 198;
+const CARD_BOTTOM_BASELINE = 214;
+
+const CARD_STATUS_COLORS = {
+  released: '#4ade80',
+  alpha: '#fbbf24',
+  beta: '#60a5fa',
+  development: '#a78bfa',
+  'in-development': '#a78bfa',
+  'early-access': '#f59e0b',
+  earlyaccess: '#f59e0b',
+  prototype: '#94a3b8',
+  demo: '#94a3b8',
+  cancelled: '#ef4444',
+};
+
+// ============================================================
+// CARD HELPERS
+// ============================================================
 function escapeXml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
@@ -144,14 +139,12 @@ function escapeXml(str) {
     .replace(/'/g, '&apos;');
 }
 
-// Split text into lines that fit the given character budget,
-// with optional truncation and ellipsis on the last line.
 function wrapText(text, maxCharsPerLine, maxLines) {
   if (!text) return [];
   const words = text.split(/\s+/).filter(Boolean);
   const lines = [];
   let current = '';
-  
+
   for (const word of words) {
     const test = current ? current + ' ' + word : word;
     if (test.length > maxCharsPerLine && current) {
@@ -163,93 +156,202 @@ function wrapText(text, maxCharsPerLine, maxLines) {
     }
   }
   if (current && lines.length < maxLines) lines.push(current);
-  
-  // Add ellipsis if the text was truncated
+
   const fullLength = words.join(' ').length;
   const shownLength = lines.join(' ').length;
   if (lines.length === maxLines && shownLength < fullLength) {
     const last = lines[maxLines - 1];
     lines[maxLines - 1] =
-      last.length > maxCharsPerLine - 3 ?
-      last.substring(0, maxCharsPerLine - 3) + '...' :
-      last + '...';
+      last.length > maxCharsPerLine - 3
+        ? last.substring(0, maxCharsPerLine - 3) + '...'
+        : last + '...';
   }
-  
+
   return lines;
 }
 
-// Generate the SVG card markup.
-function generateCard({ title, description, imageUrl, accent }) {
+function renderCardIcon(name, x, y, size, color) {
+  if (!hasIcon(name)) return '';
+  const icon = icons[name];
+  let content = icon.content;
+
+  // Force the fill color for consistent visibility on the dark card
+  if (/\bfill=/i.test(content)) {
+    content = content.replace(/\bfill=["'][^"']*["']/gi, `fill="${color}"`);
+  } else {
+    content = content.replace(
+      /<(path|circle|rect|polygon|polyline|line|ellipse)([^>]*?)(\/?)>/gi,
+      (match, tag, attrs, selfClose) => {
+        if (/\sfill=/i.test(attrs)) return match;
+        return `<${tag}${attrs} fill="${color}"${selfClose}>`;
+      }
+    );
+  }
+
+  return `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${content}</svg>`;
+}
+
+function renderTag(text, x, y) {
+  const charWidth = 6.3;
+  const paddingX = 10;
+  const width = Math.ceil(text.length * charWidth + paddingX * 2);
+  return {
+    svg:
+      `<rect x="${x}" y="${y}" width="${width}" height="${CARD_TAGS_HEIGHT}" rx="${CARD_TAGS_HEIGHT / 2}" fill="#ffffff" fill-opacity="0.08" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1"/>` +
+      `<text x="${x + width / 2}" y="${y + CARD_TAGS_HEIGHT / 2 + 4}" text-anchor="middle" font-family="${CARD_FONT_STACK}" font-size="11" font-weight="500" fill="#c8d0e0">${escapeXml(text)}</text>`,
+    width,
+  };
+}
+
+function renderStatusBadge(status) {
+  const key = status.toLowerCase().replace(/\s+/g, '-');
+  const color = CARD_STATUS_COLORS[key] || '#94a3b8';
+  const label = status.replace(/-/g, ' ').toUpperCase();
+  const charWidth = 7;
+  const dotSize = 7;
+  const gap = 5;
+  const paddingX = 10;
+  const textWidth = label.length * charWidth;
+  const totalWidth = paddingX + dotSize + gap + textWidth + paddingX;
+  return { color, label, width: totalWidth };
+}
+
+function renderStars(rating) {
+  const filled = Math.round(rating);
+  const empty = 5 - filled;
+  return '★'.repeat(filled) + '☆'.repeat(empty);
+}
+
+function generateCard({
+  title,
+  description,
+  imageUrl,
+  accent,
+  tags,
+  status,
+  version,
+  rating,
+  platforms,
+}) {
   const accentColor = accent || CARD_DEFAULT_ACCENT;
   const endColor = CARD_DEFAULT_END;
-  
-  // Truncate long titles (about 26 characters fit at 26px bold)
-  const safeTitle = title.length > 26 ? title.slice(0, 24) + '...' : title;
-  
-  // Description: about 48 chars per line, up to 4 lines
-  const descLines = wrapText(description, 48, 4);
-  
+
+  const safeTitle = title.length > 24 ? title.slice(0, 22) + '...' : title;
+  const descLines = wrapText(description, 46, CARD_DESC_MAX_LINES);
+
+  // ---------- Top-right: version + status ----------
+  let topRightSvg = '';
+  let rightEdge = CARD_WIDTH - CARD_PADDING_RIGHT;
+
+  if (status) {
+    const badge = renderStatusBadge(status);
+    const badgeX = rightEdge - badge.width;
+    topRightSvg += `<rect x="${badgeX}" y="${CARD_TOPRIGHT_BASELINE - 12}" width="${badge.width}" height="22" rx="11" fill="${badge.color}" fill-opacity="0.15"/>`;
+    topRightSvg += `<circle cx="${badgeX + 10}" cy="${CARD_TOPRIGHT_BASELINE - 1}" r="3.5" fill="${badge.color}"/>`;
+    topRightSvg += `<text x="${badgeX + 22}" y="${CARD_TOPRIGHT_BASELINE + 4}" font-family="${CARD_FONT_STACK}" font-size="11" font-weight="600" fill="${badge.color}" letter-spacing="0.5">${badge.label}</text>`;
+    rightEdge = badgeX - 10;
+  }
+
+  if (version) {
+    const versionText = version.startsWith('v') ? version : `v${version}`;
+    topRightSvg += `<text x="${rightEdge}" y="${CARD_TOPRIGHT_BASELINE + 4}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" font-weight="500" fill="#8892a6">${escapeXml(versionText)}</text>`;
+  }
+
+  // ---------- Title ----------
+  const titleSvg = `<text x="${CARD_TEXT_X}" y="${CARD_TITLE_BASELINE}" font-family="${CARD_FONT_STACK}" font-size="26" font-weight="700" fill="#ffffff">${escapeXml(safeTitle)}</text>`;
+
+  // ---------- Description ----------
   let descSvg = '';
-  const descStartY = 118;
-  const descLineHeight = 22;
-  const fontStack =
-    "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
-  
   descLines.forEach((line, i) => {
-    descSvg += `<text x="${CARD_TEXT_X}" y="${
-      descStartY + i * descLineHeight
-    }" font-family="${fontStack}" font-size="14" fill="#a8b0c0">${escapeXml(
-      line
-    )}</text>`;
+    descSvg += `<text x="${CARD_TEXT_X}" y="${CARD_DESC_START_Y + i * CARD_DESC_LINE_HEIGHT}" font-family="${CARD_FONT_STACK}" font-size="14" fill="#a8b0c0">${escapeXml(line)}</text>`;
   });
-  
+
+  // ---------- Tags ----------
+  let tagsSvg = '';
+  if (tags && tags.length > 0) {
+    let tagX = CARD_TEXT_X;
+    const maxX = CARD_WIDTH - CARD_PADDING_RIGHT;
+    for (const tag of tags.slice(0, 5)) {
+      const rendered = renderTag(tag, tagX, CARD_TAGS_Y);
+      if (tagX + rendered.width > maxX) break;
+      tagsSvg += rendered.svg;
+      tagX += rendered.width + 6;
+    }
+  }
+
+  // ---------- Bottom row: platforms (left) + rating (right) ----------
+  let bottomSvg = '';
+
+  if (platforms && platforms.length > 0) {
+    let iconX = CARD_TEXT_X;
+    for (const p of platforms) {
+      const iconSvg = renderCardIcon(
+        p.iconName,
+        iconX,
+        CARD_PLATFORM_ICON_Y,
+        CARD_PLATFORM_ICON_SIZE,
+        '#e6ebf5'
+      );
+      if (iconSvg) {
+        bottomSvg += iconSvg;
+        iconX += CARD_PLATFORM_ICON_SIZE + 12;
+      }
+    }
+  }
+
+  if (rating !== null && rating !== undefined) {
+    const stars = renderStars(rating);
+    const value = rating.toFixed(1);
+    bottomSvg += `<text x="${CARD_WIDTH - CARD_PADDING_RIGHT}" y="${CARD_BOTTOM_BASELINE}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" fill="#fbbf24" letter-spacing="1">${stars}<tspan fill="#8892a6" font-size="12">  ${value}</tspan></text>`;
+  }
+
+  // ---------- Compose final SVG ----------
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${CARD_WIDTH}" height="${CARD_HEIGHT}" viewBox="0 0 ${CARD_WIDTH} ${CARD_HEIGHT}">
   <defs>
     <linearGradient id="cardBg" x1="${CARD_IMAGE_SIZE}" y1="0" x2="${CARD_WIDTH}" y2="0" gradientUnits="userSpaceOnUse">
       <stop offset="0%" stop-color="${escapeXml(accentColor)}"/>
       <stop offset="100%" stop-color="${escapeXml(endColor)}"/>
     </linearGradient>
+    <radialGradient id="cardGlow" cx="${CARD_IMAGE_SIZE}" cy="${CARD_HEIGHT / 2}" r="${CARD_WIDTH - CARD_IMAGE_SIZE}" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="${escapeXml(accentColor)}" stop-opacity="0.4"/>
+      <stop offset="55%" stop-color="${escapeXml(accentColor)}" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="${escapeXml(endColor)}" stop-opacity="0"/>
+    </radialGradient>
     <clipPath id="cardClip">
       <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" rx="${CARD_RADIUS}"/>
     </clipPath>
   </defs>
   <g clip-path="url(#cardClip)">
     <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="url(#cardBg)"/>
-    <image href="${escapeXml(
-      imageUrl
-    )}" x="0" y="0" width="${CARD_IMAGE_SIZE}" height="${CARD_IMAGE_SIZE}" preserveAspectRatio="xMidYMid slice"/>
-    <text x="${CARD_TEXT_X}" y="70" font-family="${fontStack}" font-size="26" font-weight="700" fill="#ffffff">${escapeXml(
-    safeTitle
-  )}</text>
+    <rect width="${CARD_WIDTH}" height="${CARD_HEIGHT}" fill="url(#cardGlow)"/>
+    <image href="${escapeXml(imageUrl)}" x="0" y="0" width="${CARD_IMAGE_SIZE}" height="${CARD_IMAGE_SIZE}" preserveAspectRatio="xMidYMid slice"/>
+    <rect x="${CARD_IMAGE_SIZE}" y="0" width="2" height="${CARD_HEIGHT}" fill="${escapeXml(accentColor)}" fill-opacity="0.4"/>
+    ${topRightSvg}
+    ${titleSvg}
     ${descSvg}
+    ${tagsSvg}
+    ${bottomSvg}
   </g>
 </svg>`;
 }
-// Build a single icon inside a clipped rounded box.
-// All layout/style values are passed in as params (no globals) so concurrent
-// requests with different query params never interfere with each other.
+
+// ============================================================
+// ICON RENDERING (unchanged)
+// ============================================================
 function renderIcon(name, x, y, index, size, radius, bg, bgcolor) {
-  // REVIEW FIX: explicit own-property check instead of a bare truthy lookup
-  // (see hasIcon() above) — closes the constructor/__proto__ edge case.
   if (!hasIcon(name)) return '';
   const icon = icons[name];
-  
-  const clipId = `clip-${index}`; // unique id per box
-  
-  // icon.viewBox is produced by our own build-icons.js step (always plain
-  // numbers/spaces, e.g. "0 0 24 24") — it's not user input, so escaping it
-  // here is unnecessary work on a per-icon, per-request hot path.
+  const clipId = `clip-${index}`;
+
   const innerSvg =
-  `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
-  `x="${PADDING}" y="${PADDING}" width="${size}" height="${size}" ` +
-  `viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>`;
-  
+    `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
+    `x="${PADDING}" y="${PADDING}" width="${size}" height="${size}" ` +
+    `viewBox="${icon.viewBox}" preserveAspectRatio="xMidYMid meet">${icon.content}</svg>`;
+
   if (!bg) {
-    // No background requested: skip the rect and the clipPath entirely,
-    // render the icon directly.
     return `<g transform="translate(${x}, ${y})">${innerSvg}</g>`;
   }
-  
+
   return (
     `<g transform="translate(${x}, ${y})">` +
     `<rect width="${size}" height="${size}" rx="${radius}" fill="${escapeAttr(bgcolor)}"/>` +
@@ -260,25 +362,17 @@ function renderIcon(name, x, y, index, size, radius, bg, bgcolor) {
 }
 
 function buildSvg(names, perline, size, gap, radius, bg, bgcolor) {
-  // REVIEW FIX: use the same explicit own-property check here as renderIcon,
-  // so "constructor"/"__proto__"/etc. are correctly excluded from `valid`
-  // (and therefore from the layout math) instead of being counted as icons.
   const valid = names.filter(hasIcon);
-  
+
   if (valid.length === 0) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="48">` +
-      `<text x="8" y="28" font-family="monospace" font-size="13" fill="#e05252">` +
-      `No valid icons found</text></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="48"><text x="8" y="28" font-family="monospace" font-size="13" fill="#e05252">No valid icons found</text></svg>`;
   }
-  
+
   const columns = perline && perline > 0 ? Math.min(perline, valid.length) : valid.length;
   const rows = Math.ceil(valid.length / columns);
-  
   const width = columns * size + (columns - 1) * gap;
   const height = rows * size + (rows - 1) * gap;
-  
-  // Collect parts in an array and join once at the end instead of repeated
-  // string += concatenation inside the loop (faster, and reads more clearly).
+
   const parts = [];
   valid.forEach((name, idx) => {
     const col = idx % columns;
@@ -287,19 +381,18 @@ function buildSvg(names, perline, size, gap, radius, bg, bgcolor) {
     const y = row * (size + gap);
     parts.push(renderIcon(name, x, y, idx, size, radius, bg, bgcolor));
   });
-  
-  return (
-  `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" ` +
-  `width="${width}" height="${height}" ` +
-  `viewBox="0 0 ${width} ${height}" fill="none">${parts.join('')}</svg>`
-);
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" fill="none">${parts.join('')}</svg>`;
 }
 
+// ============================================================
+// MAIN HANDLER
+// ============================================================
 export default {
   async fetch(request) {
     const url = new URL(request.url);
 
-    // ---- Simple per-IP rate limiting (applies to all routes) ----
+    // ---- Rate limiting (all routes) ----
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     if (isRateLimited(ip)) {
       return new Response('Too Many Requests', {
@@ -317,10 +410,17 @@ export default {
       const description = (url.searchParams.get('desc') || '').trim();
       const imageUrl = (url.searchParams.get('img') || '').trim();
       const accentParam = url.searchParams.get('accent');
+      const tagsParam = url.searchParams.get('tags') || '';
+      const status = (url.searchParams.get('status') || '').trim();
+      const version = (url.searchParams.get('version') || '').trim();
+      const ratingParam = url.searchParams.get('rating');
+      const steamParam = (url.searchParams.get('steam') || '').trim();
+      const githubParam = (url.searchParams.get('github') || '').trim();
+      const itchParam = (url.searchParams.get('itch') || '').trim();
 
       if (!title || !imageUrl) {
         return new Response(
-          'Missing required parameters: "title" and "img" are required. Example: /card?title=My+Game&desc=...&img=https://...',
+          'Missing required parameters: "title" and "img" are required.',
           { status: 400 }
         );
       }
@@ -336,7 +436,44 @@ export default {
         accent = validated;
       }
 
-      const svg = generateCard({ title, description, imageUrl, accent });
+      const tags = tagsParam
+        .split(',')
+        .map((t) => t.trim())
+        .filter(Boolean)
+        .slice(0, 5);
+
+      let rating = null;
+      if (ratingParam) {
+        const num = parseFloat(ratingParam);
+        if (!isNaN(num) && num >= 0 && num <= 5) rating = num;
+      }
+
+      // Platform links
+      const platforms = [];
+      if (steamParam) {
+        const iconName = findFirstIcon(['steam', 'steamgames', 'valve']);
+        if (iconName) platforms.push({ iconName });
+      }
+      if (githubParam) {
+        const iconName = findFirstIcon(['github']);
+        if (iconName) platforms.push({ iconName });
+      }
+      if (itchParam) {
+        const iconName = findFirstIcon(['itchio', 'itchdotio', 'itch']);
+        if (iconName) platforms.push({ iconName });
+      }
+
+      const svg = generateCard({
+        title,
+        description,
+        imageUrl,
+        accent,
+        tags,
+        status,
+        version,
+        rating,
+        platforms,
+      });
 
       return new Response(svg, {
         headers: {
@@ -430,7 +567,7 @@ export default {
         const validated = validateHexColor(bgcolorParam);
         if (validated === null) {
           return new Response(
-            'Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color, e.g. "ff0000" or "#f00"',
+            'Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color',
             { status: 400 }
           );
         }
@@ -440,14 +577,13 @@ export default {
 
     const svg = buildSvg(names, perline, size, gap, radius, bg, bgcolor);
 
-    // Short max-age during active development. Will be raised later.
-    const headers = {
-      'Content-Type': 'image/svg+xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=60',
-      'Access-Control-Allow-Origin': '*',
-      'X-Content-Type-Options': 'nosniff',
-    };
-
-    return new Response(svg, { headers });
+    return new Response(svg, {
+      headers: {
+        'Content-Type': 'image/svg+xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=60',
+        'Access-Control-Allow-Origin': '*',
+        'X-Content-Type-Options': 'nosniff',
+      },
+    });
   },
 };
