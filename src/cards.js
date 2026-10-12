@@ -119,12 +119,12 @@ export function generateCard({
     topRightSvg += `<text x="${rightEdge}" y="${CARD_BADGE_CENTER_Y + 4}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" font-weight="500" fill="#8892a6">${escapeXml(versionText)}</text>`;
   }
 
-  const titleSvg = `<text x="${CARD_TEXT_X}" y="${CARD_TITLE_BASELINE}" font-family="${CARD_FONT_STACK}" font-size="26" font-weight="700" fill="#ffffff">${escapeXml(safeTitle)}</text>`;
+  const titleSvg = `<text x="${CARD_TEXT_X}" y="${CARD_TITLE_BASELINE}" font-family="${CARD_FONT_STACK}" font-size="28" font-weight="700" fill="#ffffff">${escapeXml(safeTitle)}</text>`;
 
   // ---------- Row 2: Description ----------
   let descSvg = '';
   descLines.forEach((line, i) => {
-    descSvg += `<text x="${CARD_TEXT_X}" y="${CARD_DESC_START_Y + i * CARD_DESC_LINE_HEIGHT}" font-family="${CARD_FONT_STACK}" font-size="14" fill="#a8b0c0">${escapeXml(line)}</text>`;
+    descSvg += `<text x="${CARD_TEXT_X}" y="${CARD_DESC_START_Y + i * CARD_DESC_LINE_HEIGHT}" font-family="${CARD_FONT_STACK}" font-size="18" fill="#a8b0c0">${escapeXml(line)}</text>`;
   });
 
   // ---------- Row 3: Tags (left) + Rating (right) ----------
