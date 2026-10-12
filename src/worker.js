@@ -137,7 +137,7 @@ export default {
         rating,
       });
 
-      return new Response(svg, { headers: svgHeaders(3600) });
+      return new Response(svg, { headers: svgHeaders(0) });
     }
 
     // ---- Route: /icons ----
@@ -229,7 +229,7 @@ export default {
 
       const svg = buildSvg(names, perline, size, gap, radius, bg, bgcolor);
 
-      return new Response(svg, { headers: svgHeaders(60) });
+      return new Response(svg, { headers: svgHeaders(0) });
     }
 
     return new Response('Not found', { status: 404 });
