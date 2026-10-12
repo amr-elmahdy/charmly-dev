@@ -1,7 +1,7 @@
 // ============================================================
 // Charmly Worker — main entry point.
 // Handles routing, rate limiting, and request validation.
-// Actual rendering is delegated to ./icons.js and ./card.js.
+// Actual rendering is delegated to ./icons.js and ./cards.js.
 // ============================================================
 
 import {
@@ -66,6 +66,51 @@ function svgHeaders(cacheSeconds) {
   };
 }
 
+// ---- Image fetching (for /card route) ----
+// Fetches a remote image and converts it to a base64 data URI
+// so it can be embedded directly in the SVG.
+// GitHub's Content-Security-Policy blocks external <image> URLs,
+// so we must inline the image bytes.
+const MAX_IMAGE_BYTES = 200 * 1024; // 200 KB hard limit
+
+async function imageToDataUri(imageUrl) {
+  let parsed;
+  try {
+    parsed = new URL(imageUrl);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+    return null;
+  }
+
+  try {
+    const res = await fetch(imageUrl, {
+      headers: {
+        'User-Agent': 'Charmly/1.0 (+https://github.com/amrelmahdy001/Charmly)',
+      },
+    });
+
+    if (!res.ok) return null;
+
+    const contentType = res.headers.get('content-type') || '';
+    if (!contentType.startsWith('image/')) return null;
+
+    const buffer = await res.arrayBuffer();
+    if (buffer.byteLength > MAX_IMAGE_BYTES) return null;
+
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64 = btoa(binary);
+    return `data:${contentType};base64,${base64}`;
+  } catch {
+    return null;
+  }
+}
+
 // ============================================================
 // MAIN HANDLER
 // ============================================================
@@ -126,10 +171,19 @@ export default {
         if (!isNaN(num) && num >= 0 && num <= 5) rating = num;
       }
 
+      // Convert the image URL to a base64 data URI so it embeds
+      // directly in the SVG. If the conversion fails, fall back
+      // to the original URL (it'll still render in browsers).
+      let finalImageUrl = imageUrl;
+      if (!imageUrl.startsWith('data:')) {
+        const dataUri = await imageToDataUri(imageUrl);
+        if (dataUri) finalImageUrl = dataUri;
+      }
+
       const svg = generateCard({
         title,
         description,
-        imageUrl,
+        imageUrl: finalImageUrl,
         accent,
         tags,
         status,
