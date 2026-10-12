@@ -6,26 +6,31 @@
 import { escapeXml, wrapText } from './utils.js';
 
 // ---- Card layout constants ----
-const CARD_WIDTH = 640;
+const CARD_WIDTH = 960;
 const CARD_HEIGHT = 240;
 const CARD_IMAGE_SIZE = 240;
-const CARD_RADIUS = 20;
+const CARD_RADIUS = 16;
 const CARD_TEXT_X = CARD_IMAGE_SIZE + 24;
-const CARD_PADDING_RIGHT = 24;
+const CARD_PADDING_RIGHT = 20;
 const CARD_DEFAULT_ACCENT = '#5865F2';
 const CARD_DEFAULT_END = '#1a1d2e';
 const CARD_FONT_STACK =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
 
-// Vertical layout
-const CARD_TOPRIGHT_BASELINE = 48;
-const CARD_TITLE_BASELINE = 78;
-const CARD_DESC_START_Y = 112;
+// ---- Vertical layout ----
+// Row 1: Title (left) + Status badge + Version (right), all vertically centered together
+const CARD_TITLE_BASELINE = 62;
+const CARD_BADGE_CENTER_Y = 52;
+
+// Row 2: Description
+const CARD_DESC_START_Y = 104;
 const CARD_DESC_LINE_HEIGHT = 22;
 const CARD_DESC_MAX_LINES = 3;
-const CARD_TAGS_Y = 174;
+
+// Row 3: Tags (left) + Rating (right), visually aligned
+const CARD_TAGS_Y = 176;
 const CARD_TAGS_HEIGHT = 22;
-const CARD_BOTTOM_BASELINE = 214;
+const CARD_RATING_BASELINE = 191;
 
 const CARD_STATUS_COLORS = {
   released: '#4ade80',
@@ -88,41 +93,46 @@ export function generateCard({
   const accentColor = accent || CARD_DEFAULT_ACCENT;
   const endColor = CARD_DEFAULT_END;
 
-  const safeTitle = title.length > 24 ? title.slice(0, 22) + '...' : title;
-  const descLines = wrapText(description, 46, CARD_DESC_MAX_LINES);
+  const safeTitle = title.length > 32 ? title.slice(0, 30) + '...' : title;
+  const descLines = wrapText(description, 72, CARD_DESC_MAX_LINES);
 
-  // ---------- Top-right: version + status ----------
+  // ---------- Row 1: Title (left) + Status + Version (right) ----------
+  // Both the title and the badge/version row are vertically centered
+  // around the same visual line (CARD_BADGE_CENTER_Y ≈ title center).
   let topRightSvg = '';
   let rightEdge = CARD_WIDTH - CARD_PADDING_RIGHT;
 
   if (status) {
     const badge = renderStatusBadge(status);
     const badgeX = rightEdge - badge.width;
-    topRightSvg += `<rect x="${badgeX}" y="${CARD_TOPRIGHT_BASELINE - 12}" width="${badge.width}" height="22" rx="11" fill="${badge.color}" fill-opacity="0.15"/>`;
-    topRightSvg += `<circle cx="${badgeX + 10}" cy="${CARD_TOPRIGHT_BASELINE - 1}" r="3.5" fill="${badge.color}"/>`;
-    topRightSvg += `<text x="${badgeX + 22}" y="${CARD_TOPRIGHT_BASELINE + 4}" font-family="${CARD_FONT_STACK}" font-size="11" font-weight="600" fill="${badge.color}" letter-spacing="0.5">${badge.label}</text>`;
-    rightEdge = badgeX - 10;
+    const badgeTop = CARD_BADGE_CENTER_Y - 11;
+
+    topRightSvg += `<rect x="${badgeX}" y="${badgeTop}" width="${badge.width}" height="22" rx="11" fill="${badge.color}" fill-opacity="0.15"/>`;
+    topRightSvg += `<circle cx="${badgeX + 10}" cy="${CARD_BADGE_CENTER_Y}" r="3.5" fill="${badge.color}"/>`;
+    topRightSvg += `<text x="${badgeX + 22}" y="${CARD_BADGE_CENTER_Y + 4}" font-family="${CARD_FONT_STACK}" font-size="11" font-weight="600" fill="${badge.color}" letter-spacing="0.5">${badge.label}</text>`;
+
+    rightEdge = badgeX - 12;
   }
 
   if (version) {
     const versionText = version.startsWith('v') ? version : `v${version}`;
-    topRightSvg += `<text x="${rightEdge}" y="${CARD_TOPRIGHT_BASELINE + 4}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" font-weight="500" fill="#8892a6">${escapeXml(versionText)}</text>`;
+    topRightSvg += `<text x="${rightEdge}" y="${CARD_BADGE_CENTER_Y + 4}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" font-weight="500" fill="#8892a6">${escapeXml(versionText)}</text>`;
   }
 
-  // ---------- Title ----------
   const titleSvg = `<text x="${CARD_TEXT_X}" y="${CARD_TITLE_BASELINE}" font-family="${CARD_FONT_STACK}" font-size="26" font-weight="700" fill="#ffffff">${escapeXml(safeTitle)}</text>`;
 
-  // ---------- Description ----------
+  // ---------- Row 2: Description ----------
   let descSvg = '';
   descLines.forEach((line, i) => {
     descSvg += `<text x="${CARD_TEXT_X}" y="${CARD_DESC_START_Y + i * CARD_DESC_LINE_HEIGHT}" font-family="${CARD_FONT_STACK}" font-size="14" fill="#a8b0c0">${escapeXml(line)}</text>`;
   });
 
-  // ---------- Tags ----------
+  // ---------- Row 3: Tags (left) + Rating (right) ----------
   let tagsSvg = '';
   if (tags && tags.length > 0) {
     let tagX = CARD_TEXT_X;
-    const maxX = CARD_WIDTH - CARD_PADDING_RIGHT;
+    // Reserve room for the rating on the right (about 100px)
+    const maxX = CARD_WIDTH - CARD_PADDING_RIGHT - 100;
     for (const tag of tags.slice(0, 5)) {
       const rendered = renderTag(tag, tagX, CARD_TAGS_Y);
       if (tagX + rendered.width > maxX) break;
@@ -131,12 +141,11 @@ export function generateCard({
     }
   }
 
-  // ---------- Bottom: rating only ----------
-  let bottomSvg = '';
+  let ratingSvg = '';
   if (rating !== null && rating !== undefined) {
     const stars = renderStars(rating);
     const value = rating.toFixed(1);
-    bottomSvg += `<text x="${CARD_WIDTH - CARD_PADDING_RIGHT}" y="${CARD_BOTTOM_BASELINE}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" fill="#fbbf24" letter-spacing="1">${stars}<tspan fill="#8892a6" font-size="12">  ${value}</tspan></text>`;
+    ratingSvg = `<text x="${CARD_WIDTH - CARD_PADDING_RIGHT}" y="${CARD_RATING_BASELINE}" text-anchor="end" font-family="${CARD_FONT_STACK}" font-size="13" fill="#fbbf24" letter-spacing="1">${stars}<tspan fill="#8892a6" font-size="12">  ${value}</tspan></text>`;
   }
 
   // ---------- Compose final SVG ----------
@@ -164,7 +173,7 @@ export function generateCard({
     ${titleSvg}
     ${descSvg}
     ${tagsSvg}
-    ${bottomSvg}
+    ${ratingSvg}
   </g>
 </svg>`;
 }
