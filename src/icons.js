@@ -6,7 +6,7 @@
 import icons from '../dist/icons.json' assert { type: 'json' };
 import { escapeAttr } from './utils.js';
 
-// ---- Layout constants ----
+// ---- Layout defaults ----
 export const DEFAULT_SIZE = 48;
 export const DEFAULT_GAP = 8;
 export const DEFAULT_RADIUS = 12;
@@ -14,6 +14,7 @@ export const DEFAULT_BG = true;
 export const DEFAULT_BGCOLOR = '#1a1b2e';
 export const PADDING = 0;
 
+// ---- Allowed ranges ----
 export const SIZE_MIN = 16, SIZE_MAX = 128;
 export const GAP_MIN = 0, GAP_MAX = 32;
 export const RADIUS_MIN = 0, RADIUS_MAX = 24;
