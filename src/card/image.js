@@ -32,10 +32,8 @@ export function validateMergeMode(mode) {
 // Public API
 // ============================================================
 
-export function renderImage({ imageUrl, imageWidth, mergeMode, panelColor, }) {
+export function renderImage({ imageUrl, imageWidth, mergeMode, panelColor }) {
   if (!imageUrl) return '';
-  
-  const fadeStartX = imageWidth * SMOOTH_FADE_START;
   
   const imageEl =
     `<image href="${escapeXml(imageUrl)}" x="0" y="0" ` +
@@ -53,7 +51,7 @@ export function renderImage({ imageUrl, imageWidth, mergeMode, panelColor, }) {
     }
     
     case 'smooth': {
-      const fadeWidth = imageWidth * 0.15; // 15% من عرض الصورة
+      const fadeWidth = imageWidth * 0.15;
       const fadeStartX = imageWidth - fadeWidth;
       const gradientId = 'cardSmoothFade';
       
