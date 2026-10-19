@@ -1,20 +1,16 @@
 // ============================================================
-// Card layout module.
-// Computes all dimensions and positions for a card.
-// Pure calculations — no rendering, no side effects.
+// Card layout module
 // ============================================================
 
-// ---- Base dimensions ----
+// Base dimensions
 export const CARD_HEIGHT = 250;
 
-// Panel width — the text area on the right of the image.
 export const CARD_SIZES = {
   s: 250,
   m: 500,
   l: 750,
 };
 
-// Image width — the image on the left of the card.
 export const IMAGE_WIDTHS = {
   s: 150,
   m: 250,
@@ -22,19 +18,19 @@ export const IMAGE_WIDTHS = {
   xl: 500,
 };
 
-// ---- Spacing & style ----
+// Spacing & style
 export const CARD_PADDING = 24;
 export const CORNER_RADII = {
   sharp: 0,
   smooth: 12,
 };
 
-// ---- Defaults ----
+// Defaults
 export const DEFAULT_SIZE = 'm';
 export const DEFAULT_IMAGE_SIZE = 'm';
 export const DEFAULT_CORNER = 'smooth';
 
-// ---- Vertical baselines (relative to card top) ----
+// Vertical baselines
 const TITLE_BASELINE = 55;
 const TITLE_LINE_Y = 75;
 const DESC_START_Y = 105;
@@ -46,8 +42,6 @@ const WIDGETS_BASELINE = 215;
 // Validators
 // ============================================================
 
-// Returns the normalised size key, or null on error.
-// `null` input → default.
 export function validateSize(size) {
   if (size === null) return DEFAULT_SIZE;
   const lower = String(size).toLowerCase();
@@ -55,7 +49,6 @@ export function validateSize(size) {
   return lower;
 }
 
-// Returns the normalised image-size key, or null on error.
 export function validateImageSize(size) {
   if (size === null) return DEFAULT_IMAGE_SIZE;
   const lower = String(size).toLowerCase();
@@ -63,7 +56,6 @@ export function validateImageSize(size) {
   return lower;
 }
 
-// Returns the normalised corner key, or null on error.
 export function validateCorner(corner) {
   if (corner === null) return DEFAULT_CORNER;
   const lower = String(corner).toLowerCase();
@@ -75,8 +67,6 @@ export function validateCorner(corner) {
 // Layout computation
 // ============================================================
 
-// Given a size key and image-size key, returns every measurement
-// the card needs to place its contents. All values are in pixels.
 export function computeLayout({ size, imageSize }) {
   const panelWidth = CARD_SIZES[size];
   const imageWidth = IMAGE_WIDTHS[imageSize];
@@ -97,7 +87,7 @@ export function computeLayout({ size, imageSize }) {
     imageHeight: CARD_HEIGHT,
     panelWidth,
     
-    // Content side (relative to the card's top-left)
+    // Content side
     contentX,
     contentWidth,
     rightEdge,

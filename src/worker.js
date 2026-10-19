@@ -1,7 +1,5 @@
 // ============================================================
-// Charmly Worker — main entry point.
-// Handles routing, rate limiting, and request validation.
-// Actual rendering is delegated to ./icons.js and ./card/index.js.
+// Charmly Worker — main entry point
 // ============================================================
 
 import {
@@ -26,7 +24,7 @@ import {
 } from './icons.js';
 import { generateCard } from './card/index.js';
 
-// ---- Rate limiting config ----
+// Rate limiting
 const RATE_LIMIT_MAX = 100;
 const RATE_LIMIT_WINDOW_MS = 60_000;
 const RATE_LIMIT_CLEANUP_MS = 5 * 60_000;
@@ -56,7 +54,7 @@ function isRateLimited(ip) {
   return entry.count > RATE_LIMIT_MAX;
 }
 
-// ---- Common response headers ----
+// Response headers
 function svgHeaders(cacheSeconds) {
   return {
     'Content-Type': 'image/svg+xml; charset=utf-8',
@@ -66,7 +64,7 @@ function svgHeaders(cacheSeconds) {
   };
 }
 
-// Read a query param that supports a full name and a short alias.
+// Query param with short alias
 function getParam(params, fullName, shortName) {
   const full = params.get(fullName);
   if (full !== null) return full;
@@ -74,13 +72,13 @@ function getParam(params, fullName, shortName) {
 }
 
 // ============================================================
-// MAIN HANDLER
+// Main handler
 // ============================================================
 export default {
   async fetch(request) {
     const url = new URL(request.url);
 
-    // ---- Rate limiting (all routes) ----
+    // Rate limiting
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     if (isRateLimited(ip)) {
       return new Response('Too Many Requests', {
@@ -92,15 +90,25 @@ export default {
       });
     }
 
-    // ---- Route: /card ----
+    // Route: /card
     if (url.pathname === '/card') {
       const title = (getParam(url.searchParams, 'title', 't') || '').trim();
       const size = getParam(url.searchParams, 'size', 's');
       const imageSize = getParam(url.searchParams, 'imagewidth', 'iw');
       const corner = getParam(url.searchParams, 'corner', 'co');
       const colour = getParam(url.searchParams, 'colour', 'c');
+      const img = (url.searchParams.get('img') || '').trim();
+      const imgmerge = getParam(url.searchParams, 'imagermerge', 'im');
 
-      const result = generateCard({ title, size, imageSize, corner, colour });
+      const result = generateCard({
+        title,
+        size,
+        imageSize,
+        corner,
+        colour,
+        img,
+        imgmerge,
+      });
 
       if (result.error) {
         return new Response(result.error, {
@@ -112,7 +120,7 @@ export default {
       return new Response(result.svg, { headers: svgHeaders(60) });
     }
 
-    // ---- Route: /icons ----
+    // Route: /icons
     if (url.pathname === '/icons') {
       const iParam = url.searchParams.get('i') || '';
       const names = iParam
@@ -137,6 +145,7 @@ export default {
       const perlineParam = url.searchParams.get('perline');
       const perline = perlineParam ? parseInt(perlineParam, 10) : 0;
 
+      // Validate size
       const size = validateNumber(
         url.searchParams.get('size'),
         SIZE_MIN,
@@ -150,6 +159,7 @@ export default {
         );
       }
 
+      // Validate gap
       const gap = validateNumber(
         url.searchParams.get('gap'),
         GAP_MIN,
@@ -163,6 +173,7 @@ export default {
         );
       }
 
+      // Validate radius
       const radius = validateNumber(
         url.searchParams.get('radius'),
         RADIUS_MIN,
@@ -176,6 +187,7 @@ export default {
         );
       }
 
+      // Validate bg
       const bg = validateBoolean(url.searchParams.get('bg'), DEFAULT_BG);
       if (bg === null) {
         return new Response(
@@ -184,6 +196,7 @@ export default {
         );
       }
 
+      // Validate bgcolor
       let bgcolor = DEFAULT_BGCOLOR;
       if (bg) {
         const bgcolorParam = url.searchParams.get('bgcolor');
@@ -204,7 +217,7 @@ export default {
       return new Response(svg, { headers: svgHeaders(60) });
     }
 
-    // ---- Fallback: unknown route ----
+    // Unknown route
     return new Response('Not found', { status: 404 });
   },
 };
