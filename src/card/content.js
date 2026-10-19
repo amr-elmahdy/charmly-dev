@@ -4,7 +4,7 @@
 // Font measurement is approximate (character-count based).
 // ============================================================
 
-import { escapeXml, wrapText } from '../utils.js';
+import { escapeXml, wrapText, validateHexColor } from '../utils.js';
 
 // ---- Font sizes ----
 const TITLE_FONT_SIZE = 24;
@@ -25,7 +25,7 @@ const CHAR_WIDTH_RATIO = 0.55;
 // ============================================================
 // Validators
 // ============================================================
-import { escapeXml, wrapText, validateHexColor } from '../utils.js';
+
 // Returns the normalised desc-size key, or null on error.
 // `null` input → default.
 
