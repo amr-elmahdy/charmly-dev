@@ -32,7 +32,7 @@ export function validateMergeMode(mode) {
 // Public API
 // ============================================================
 
-export function renderImage({ imageUrl, imageWidth, mergeMode }) {
+export function renderImage({ imageUrl, imageWidth, mergeMode, panelColor, }) {
   if (!imageUrl) return '';
   
   const fadeStartX = imageWidth * SMOOTH_FADE_START;
@@ -53,19 +53,22 @@ export function renderImage({ imageUrl, imageWidth, mergeMode }) {
     }
     
     case 'smooth': {
-      const maskId = 'cardImageFadeMask';
+      const fadeWidth = imageWidth * 0.15; // 15% من عرض الصورة
+      const fadeStartX = imageWidth - fadeWidth;
+      const gradientId = 'cardSmoothFade';
+      
       return (
+        imageEl +
+        `<rect x="${fadeStartX}" y="0" width="${fadeWidth}" height="${CARD_HEIGHT}" ` +
+        `fill="url(#${gradientId})"/>` +
         `<defs>` +
-        `<linearGradient id="cardImageFadeGradient" x1="${fadeStartX}" y1="0" x2="${imageWidth}" y2="0" gradientUnits="userSpaceOnUse">` +
-        `<stop offset="0%" stop-color="#ffffff"/>` +
-        `<stop offset="100%" stop-color="#000000"/>` +
+        `<linearGradient id="${gradientId}" ` +
+        `x1="${fadeStartX}" y1="0" x2="${imageWidth}" y2="0" ` +
+        `gradientUnits="userSpaceOnUse">` +
+        `<stop offset="0%" stop-color="${escapeXml(panelColor)}" stop-opacity="0"/>` +
+        `<stop offset="100%" stop-color="${escapeXml(panelColor)}" stop-opacity="1"/>` +
         `</linearGradient>` +
-        `<mask id="${maskId}" maskUnits="userSpaceOnUse" x="0" y="0" width="${imageWidth}" height="${CARD_HEIGHT}">` +
-        `<rect x="0" y="0" width="${fadeStartX}" height="${CARD_HEIGHT}" fill="#ffffff"/>` +
-        `<rect x="${fadeStartX}" y="0" width="${imageWidth - fadeStartX}" height="${CARD_HEIGHT}" fill="url(#cardImageFadeGradient)"/>` +
-        `</mask>` +
-        `</defs>` +
-        `<g mask="url(#${maskId})">${imageEl}</g>`
+        `</defs>`
       );
     }
     

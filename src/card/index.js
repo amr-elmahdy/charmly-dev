@@ -2,7 +2,7 @@
 // Card generation — entry point
 // ============================================================
 
-import { escapeXml } from '../utils.js';
+import { escapeXml, interpolateHex } from '../utils.js';
 import { parseColors } from './colors.js';
 import { renderImage, validateMergeMode } from './image.js';
 import {
@@ -116,7 +116,20 @@ function composeSvg({
     `<stop offset="0%" stop-color="${escapeXml(colors[0])}"/>` +
     `<stop offset="100%" stop-color="${escapeXml(colors[1])}"/>`;
 
-  const imageSvg = renderImage({ imageUrl, imageWidth, mergeMode });
+  // حساب لون البانار عند حافة الصورة
+// (نسبة imageWidth من totalWidth في التدرج)
+const panelColorAtImageEdge = interpolateHex(
+  colors[0],
+  colors[1],
+  imageWidth / totalWidth
+);
+
+const imageSvg = renderImage({
+  imageUrl,
+  imageWidth,
+  mergeMode,
+  panelColor: panelColorAtImageEdge,
+});
 
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
   width="${totalWidth}" height="${totalHeight}"
