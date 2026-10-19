@@ -14,6 +14,8 @@ import {
   renderTitleLine,
   renderDescription,
   validateDescSize,
+  validateTitleColor,
+  validateDescColor,
   DEFAULT_TITLE_COLOR,
   DEFAULT_DESC_COLOR,
   FONT_STACK,
@@ -86,6 +88,22 @@ export function generateCard({
     return { error: 'Invalid "descsize" parameter. Must be one of: s, m, l' };
   }
 
+const vTitleColor = validateTitleColor(titleColor);
+if (vTitleColor === null) {
+  return {
+    error:
+      'Invalid "titlecolor" parameter. Must be a 3 or 6 digit hex color',
+  };
+}
+
+const vDescColor = validateDescColor(descColor);
+if (vDescColor === null) {
+  return {
+    error:
+      'Invalid "desccolor" parameter. Must be a 3 or 6 digit hex color',
+  };
+}
+
   const colors = parseColors(colour);
   if (colors === null) {
     return { error: 'Invalid "colour" parameter. Must be hex or hex,hex' };
@@ -104,9 +122,9 @@ export function generateCard({
     desc,
     imageUrl: img,
     mergeMode: vMerge,
-    titleColor: titleColor || DEFAULT_TITLE_COLOR,
+    titleColor: vTitleColor,
     titleLine: titleLine === 'true' || titleLine === true,
-    descColor: descColor || DEFAULT_DESC_COLOR,
+    descColor: vDescColor,
     descSize: vDescSize,
   });
 

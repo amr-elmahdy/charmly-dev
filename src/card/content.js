@@ -25,14 +25,25 @@ const CHAR_WIDTH_RATIO = 0.55;
 // ============================================================
 // Validators
 // ============================================================
-
+import { escapeXml, wrapText, validateHexColor } from '../utils.js';
 // Returns the normalised desc-size key, or null on error.
 // `null` input → default.
+
 export function validateDescSize(size) {
   if (size === null) return DEFAULT_DESC_SIZE;
   const lower = String(size).toLowerCase();
   if (!(lower in DESC_SIZES)) return null;
   return lower;
+}
+
+export function validateTitleColor(color) {
+  if (color === null) return DEFAULT_TITLE_COLOR;
+  return validateHexColor(color);
+}
+
+export function validateDescColor(color) {
+  if (color === null) return DEFAULT_DESC_COLOR;
+  return validateHexColor(color);
 }
 
 // ============================================================
