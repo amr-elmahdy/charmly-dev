@@ -8,6 +8,16 @@ export function escapeAttr(str) {
   return String(str).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
+// Escape a string for safe use inside XML text content or attributes.
+export function escapeXml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 // Validate a numeric query param against [min, max].
 export function validateNumber(paramValue, min, max, defaultValue) {
   if (paramValue === null) return defaultValue;
