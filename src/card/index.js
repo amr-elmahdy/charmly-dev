@@ -95,7 +95,6 @@ if (vTitleColor === null) {
       'Invalid "titlecolor" parameter. Must be a 3 or 6 digit hex color',
   };
 }
-
 const vDescColor = validateDescColor(descColor);
 if (vDescColor === null) {
   return {
