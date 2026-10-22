@@ -73,20 +73,20 @@ Rich cards for **projects**, **games**, and everything in between. Cover image, 
 
 Show off your project with live GitHub data — stars, version, and primary language, auto-updated.
 
-![Charmly](https://charmly.read-me.workers.dev/card?title=Charmly&desc=Icon+API+for+READMEs+—+built+on+Cloudflare+Workers&img=https://i.imgur.com/6tj7ecs.png&im=smooth&tr=stars:amr-elmahdy/Charmly&br=version:amr-elmahdy/Charmly&bl=lan:amr-elmahdy/Charmly)
+[![Charmly](https://charmly.read-me.workers.dev/card?title=Charmly&desc=An+icon+API+for+READMEs+%E2%80%94+drop+a+URL%2C+get+an+icon.+Now+growing+with+widgets+and+more+display+tools.+Built+on+Cloudflare+Workers.&img=https://raw.githubusercontent.com/amr-elmahdy/amr-elmahdy/refs/heads/main/assets/charmly-500.jpg&c=140035,100030&tc=B048D0&dc=D0C0D0&tl=true&im=smooth&co=smooth&tr=stars:amr-elmahdy/Charmly&br=version:amr-elmahdy/Charmly&bl=lan:amr-elmahdy/Charmly)](https://github.com/amr-elmahdy/Charmly)
 
 
 ### For Game Development
 
 Perfect for indie games — show your dev status, tags, and genre in one clean card.
 
-![Catastrophe](https://charmly.read-me.workers.dev/card?title=Catastrophe&desc=A+2D+platformer+with+time-loop+mechanics&img=https://i.imgur.com/6tj7ecs.png&c=005159,0a1a1f&tl=true&tr=state:in-development&bl=badges:platformer,puzzle,pixel-art)
+[![The Last Lantern](https://charmly.read-me.workers.dev/card?title=The+Last+Lantern&desc=You+have+20+seconds+of+light.+Make+them+count.+A+2D+horror+exploration+game+set+in+your+late+grandmother%27s+abandoned+mansion.+Made+for+GMTK+2026.&img=https://raw.githubusercontent.com/amr-elmahdy/amr-elmahdy/refs/heads/main/assets/the-last-lantern-500.jpg&c=0a0a0f,2a1a0a&tc=fef3c7&dc=a1a1aa&tl=true&im=smooth&tr=state:release&bl=badges:Horror,Exploration,GMTK+2026)](https://github.com/Orpita-Community/the-last-lantern)
 
-For Encyclopedias & Knowledge Bases
+### For Encyclopedias & Knowledge Bases
 
 For wikis, courses, and reference sites — show version, status, and topic badges.
 
-![Wiki](https://charmly.read-me.workers.dev/card?title=World+History+Wiki&desc=A+comprehensive+encyclopedia+of+world+history&img=https://i.imgur.com/6tj7ecs.png&c=78350f,1c1917&tl=true&tr=state:release&br=version:my-org/history-wiki&bl=badges:education,reference,open-source)
+[![Jurdian Cipher Wiki](https://charmly.read-me.workers.dev/card?title=Jurdian+Cipher+Wiki&desc=A+large+encyclopedia+of+ciphers+%E2%80%94+classical%2C+modern%2C+and+experimental+%E2%80%94+with+study%2C+analysis%2C+and+usage+for+each+entry.+Written+in+Markdown+for+Obsidian.+Currently+in+active+development.&img=https://raw.githubusercontent.com/amr-elmahdy/amr-elmahdy/refs/heads/main/assets/jurdian-500.jpg&c=303030,000000&tc=C0A038&dc=786848&tl=true&im=smooth&tr=state:in-development&bl=badges:Ciphers,Cryptography,Wiki,Jurdian)](https://github.com/Jurdian-Project/jurdian-cipher-wiki)
 
 
 ### Highlights:
