@@ -34,28 +34,33 @@ Display your skills with 1,000+ icons across 50+ categories. Fully customizable 
 
 ### Default row
 <div align="center">
+
 ![Skills](https://charmly.read-me.workers.dev/icons?i=javascript,typescript,react,nodejs,docker,postgresql&perline=6)
+
 </div>
 
 ### Large icons with custom background
 <div align="center">
+
 ![Skills](https://charmly.read-me.workers.dev/icons?i=python,pytorch,tensorflow&size=80&gap=16&radius=20&bgcolor=1a1a3a&perline=3)
+
 </div>
 
 ### Bare icons — no background
 <div align="center">
+
 ![Skills](https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=false&size=64&gap=24)
+
 </div>
-https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=false&size=64&gap=24
 
-Highlights:
+## Highlights:
 
-· ⚙️ Customize everything — size, spacing, radius, colors, background
-· 📐 Multiple layouts — one line, multiple lines, or compact
-· 🎯 1,028 icons across 50+ categories
-· ⚡ Fast — cached at the edge, no rate limit headaches
+› *Customize everything* — size, spacing, radius, colors, background
+› *Multiple layouts* — one line, multiple lines, or compact
+› *1,028 icons* across *50+ categories*
+› *Fast* — cached at the edge, no rate limit headaches
 
-📖 Full Icons Documentation →
+📖 Full Icons Documentation → [./doc/Icons.md]
 🎨 Browse All 1,028 Icons →
 
 ---
@@ -94,12 +99,12 @@ For wikis, courses, and reference sites — show version, status, and topic badg
 
 https://charmly.read-me.workers.dev/card?title=World+History+Wiki&desc=A+comprehensive+encyclopedia+of+world+history&img=https://i.imgur.com/6tj7ecs.png&c=78350f,1c1917&tl=true&tr=state:release&br=version:my-org/history-wiki&bl=badges:education,reference,open-source
 
-Highlights:
+## Highlights:
 
-· 🖼️ Cover image with 3 merge modes — cut, line, smooth
-· 🎨 Custom gradients — single color or two-color gradient
-· 🏷️ Widgets — status, badges, GitHub stars, version, language
-· 📐 3 sizes — small, medium, large — for any layout
+- › Cover image with 3 merge modes — cut, line, smooth
+- 🎨 Custom gradients — single color or two-color gradient
+- 🏷️ Widgets — status, badges, GitHub stars, version, language
+- 📐 3 sizes — small, medium, large — for any layout
 
 📖 Full Cards Documentation →
 🖼️ Card Showcase & Examples →
