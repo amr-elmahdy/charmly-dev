@@ -42,97 +42,87 @@ Display your skills with 1,000+ icons across 50+ categories. Fully customizable 
 ### Large icons with custom background
 <div align="center">
 
-![Skills](https://charmly.read-me.workers.dev/icons?i=python,pytorch,tensorflow&size=80&gap=16&radius=20&bgcolor=1a1a3a&perline=3)
+![Skills](https://charmly.read-me.workers.dev/icons?i=python,pytorch,tensorflow&size=80&gap=16&radius=14&bgcolor=1c1c3c)
 
 </div>
 
 ### Bare icons — no background
 <div align="center">
 
-![Skills](https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=false&size=64&gap=24)
+![Skills](https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=false&size=42&gap=12)
 
 </div>
 
-## Highlights:
+### Highlights:
 
-› *Customize everything* — size, spacing, radius, colors, background
-› *Multiple layouts* — one line, multiple lines, or compact
-› *1,028 icons* across *50+ categories*
-› *Fast* — cached at the edge, no rate limit headaches
+- **Customize everything** — size, spacing, radius, colors, background
+- **Multiple layouts** — one line, multiple lines, or compact
+- **1,028 icons** across **50+ categories**
+- **Fast** — cached at the edge, no rate limit headaches
 
-📖 Full Icons Documentation → [./doc/Icons.md]
-🎨 Browse All 1,028 Icons →
+> - 📖 Full Icons Documentation → [Icons Doc](./doc/Icons.md)
+> - 🎨 Browse All 1,028 Icons →
 
 ---
 
-🎴 Cards
+## 🎴 Cards
 
-Rich cards for projects, games, and everything in between. Cover image, title, description, and live GitHub stats — all in one SVG.
+Rich cards for **projects**, **games**, and everything in between. Cover image, title, description, and live GitHub stats — all in one SVG.
 
-For Developer Repos
+### For Developer Repos
 
 Show off your project with live GitHub data — stars, version, and primary language, auto-updated.
 
-```markdown
 ![Charmly](https://charmly.read-me.workers.dev/card?title=Charmly&desc=Icon+API+for+READMEs+—+built+on+Cloudflare+Workers&img=https://i.imgur.com/6tj7ecs.png&im=smooth&tr=stars:amr-elmahdy/Charmly&br=version:amr-elmahdy/Charmly&bl=lan:amr-elmahdy/Charmly)
-```
 
-https://charmly.read-me.workers.dev/card?title=Charmly&desc=Icon+API+for+READMEs+—+built+on+Cloudflare+Workers&img=https://i.imgur.com/6tj7ecs.png&im=smooth&tr=stars:amr-elmahdy/Charmly&br=version:amr-elmahdy/Charmly&bl=lan:amr-elmahdy/Charmly
 
-For Game Development
+### For Game Development
 
 Perfect for indie games — show your dev status, tags, and genre in one clean card.
 
-```markdown
 ![Catastrophe](https://charmly.read-me.workers.dev/card?title=Catastrophe&desc=A+2D+platformer+with+time-loop+mechanics&img=https://i.imgur.com/6tj7ecs.png&c=005159,0a1a1f&tl=true&tr=state:in-development&bl=badges:platformer,puzzle,pixel-art)
-```
-
-https://charmly.read-me.workers.dev/card?title=Catastrophe&desc=A+2D+platformer+with+time-loop+mechanics&img=https://i.imgur.com/6tj7ecs.png&c=005159,0a1a1f&tl=true&tr=state:in-development&bl=badges:platformer,puzzle,pixel-art
 
 For Encyclopedias & Knowledge Bases
 
 For wikis, courses, and reference sites — show version, status, and topic badges.
 
-```markdown
 ![Wiki](https://charmly.read-me.workers.dev/card?title=World+History+Wiki&desc=A+comprehensive+encyclopedia+of+world+history&img=https://i.imgur.com/6tj7ecs.png&c=78350f,1c1917&tl=true&tr=state:release&br=version:my-org/history-wiki&bl=badges:education,reference,open-source)
-```
 
-https://charmly.read-me.workers.dev/card?title=World+History+Wiki&desc=A+comprehensive+encyclopedia+of+world+history&img=https://i.imgur.com/6tj7ecs.png&c=78350f,1c1917&tl=true&tr=state:release&br=version:my-org/history-wiki&bl=badges:education,reference,open-source
 
-## Highlights:
+### Highlights:
 
-- › Cover image with 3 merge modes — cut, line, smooth
+- Cover image with 3 merge modes — cut, line, smooth
 - 🎨 Custom gradients — single color or two-color gradient
 - 🏷️ Widgets — status, badges, GitHub stars, version, language
 - 📐 3 sizes — small, medium, large — for any layout
 
-📖 Full Cards Documentation →
-🖼️ Card Showcase & Examples →
+> - 📖 Full Cards Documentation →
+> - 🖼️ Card Showcase & Examples →
 
 ---
 
-Documentation
+## Documentation
 
  
-🎨 Icons Full reference and parameters →
-🎴 Cards Complete guide with examples →
-📝 Changelog Version history →
-⚖️ Legal License · Notices
+- 🎨 Icons Full reference and parameters →
+- 🎴 Cards Complete guide with examples →
+- 📝 Changelog Version history →
+- ⚖️ Legal License · Notices
 
 ---
 
-Contributing
+## Contributing
 
 Contributions are welcome — new icons, bug fixes, or documentation improvements.
 
-· Suggest an icon: open an issue
-· Submit a PR: add the SVG to icons/ and open a pull request
+- Suggest an icon: open an issue
+- Submit a PR: add the SVG to icons/ and open a pull request
 
 ---
 
-License
+## License
 
-MIT — see LICENSE for details.
+MIT — see [LICENSE](./LINCESE.md) for details.
 
 Icons are trademarks of their respective owners — see NOTICE.md.
 
