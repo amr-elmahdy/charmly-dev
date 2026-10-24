@@ -1,90 +1,70 @@
 # Charmly Icons
 
-Reference for the `/icons` endpoint: parameters, limits, errors, examples, and how a request becomes an image.
+Add a row of tech icons to your README with one URL. No account, no API key, no install.
 
-The full icon catalog is in [ICONS-LIST.md](./ICONS-LIST.md). This page covers the API and how to use it.
-
----
-
-## Table of Contents
-
-- [Endpoint](#endpoint)
-- [Parameters](#parameters)
-- [Examples](#examples)
-- [Errors](#errors)
-- [Unknown Icon Names](#unknown-icon-names)
-- [Rate Limit](#rate-limit)
-- [How Charmly Serves an Icon](#how-charmly-serves-an-icon)
-- [Limits](#limits)
-- [FAQ](#faq)
-- [Links](#links)
+📋 [Full icon list](./ICONS-LIST.md)
 
 ---
 
-## Endpoint
+## 🚀 Quick Start
+
+**1.** Choose the icons you want, separated by commas:
 
 ```text
 https://charmly.read-me.workers.dev/icons?i=javascript,react,docker
 ```
 
-The response is an SVG image. Use the URL in Markdown:
+**2.** Paste it into your README:
 
 ```markdown
-![Icons](https://charmly.read-me.workers.dev/icons?i=javascript,react,docker)
+![Skills](https://charmly.read-me.workers.dev/icons?i=javascript,react,docker)
 ```
 
-No API key. No account. No build step on your side.
+**3.** Done. The icons render as an image.
 
 ---
 
-## Parameters
+## 🎨 Customize
 
-| Parameter | Description | Required | Type | Range / Values | Default |
-|-----------|-------------|:--------:|------|----------------|---------|
-| `i` | Icon names, comma-separated | ✅ | string | Names from [ICONS-LIST.md](./ICONS-LIST.md) | — |
-| `perline` | Icons per row | ❌ | integer | 1–50 | All icons in one row |
-| `size` | Icon size in pixels | ❌ | integer | 16–128 | `48` |
-| `gap` | Space between icons in pixels | ❌ | integer | 0–32 | `8` |
-| `radius` | Box corner radius in pixels | ❌ | integer | 0–24 | `12` |
-| `bg` | Show the background box | ❌ | boolean | `true` or `false` | `true` |
-| `bgcolor` | Background box color | ❌ | hex | 3 or 6 hex digits, with or without `#` | `#1a1b2e` |
+Add parameters to the URL with `&`.
 
-### Parameter Notes
+| Parameter | What it does | Default | Allowed |
+|-----------|--------------|---------|---------|
+| `i` | Icons to show | required | Names from the [icon list](./ICONS-LIST.md), up to 50 |
+| `perline` | Icons per row | all in one row | Any number |
+| `size` | Icon size (px) | `48` | `16` – `128` |
+| `gap` | Space between icons (px) | `8` | `0` – `32` |
+| `radius` | Corner roundness (px) | `12` | `0` – `24` |
+| `bg` | Show the background box | `true` | `true` / `false` |
+| `bgcolor` | Background color (hex) | `#1a1b2e` | 3 or 6 hex digits, `#` optional |
 
-- `perline` omitted: all icons go in one row. If the icon count is larger than `perline`, the output wraps into rows.
-- `size`, `gap`, and `radius` outside their ranges return `400`.
-- `bgcolor` is validated only when `bg=true`. When `bg=false`, the value is ignored.
-- A request can include at most **50 icons**. Larger requests return `400`.
+### Examples
 
----
-
-## Examples
-
-### Default Row
+**Default**
 
 ```text
-https://charmly.read-me.workers.dev/icons?i=javascript,typescript,react,nodejs,docker,postgresql&perline=6
+https://charmly.read-me.workers.dev/icons?i=html,css,csharp,cplusplus,c&perline=5
 ```
 
-![Default](https://charmly.read-me.workers.dev/icons?i=javascript,typescript,react,nodejs,docker,postgresql&perline=6)
+![Default](https://charmly.read-me.workers.dev/icons?i=html,css,csharp,cplusplus,c&perline=5)
 
-### Rounded Corners and Wider Spacing
+**Soft corners and spacing**
 
 ```text
-https://charmly.read-me.workers.dev/icons?i=javascript,typescript,react,nodejs,nextjs,python,docker,postgresql&size=32&gap=12&radius=24&perline=4
+https://charmly.read-me.workers.dev/icons?i=javascript,typescript,kotlin,swift,webassembly,stimulus,keystone,appwrite&gap=12&radius=24&perline=5
 ```
 
-![Soft](https://charmly.read-me.workers.dev/icons?i=javascript,typescript,react,nodejs,nextjs,python,docker,postgresql&size=32&gap=12&radius=24&perline=4)
+![Soft](https://charmly.read-me.workers.dev/icons?i=javascript,typescript,kotlin,swift,webassembly,stimulus,keystone,appwrite&gap=12&radius=24&perline=5)
 
-### Flat Corners, Tight Grid, Custom Dark Background
+**Bold, dark background**
 
 ```text
-https://charmly.read-me.workers.dev/icons?i=python,pytorch,tensorflow,jupyter,opencv,pandas&size=56&gap=4&radius=0&bgcolor=1c1c3c&perline=6
+https://charmly.read-me.workers.dev/icons?i=svelte,angular,react,nestjs,django&size=58&gap=0&radius=0&bgcolor=1c1c3c&perline=5
 ```
 
-![Bold](https://charmly.read-me.workers.dev/icons?i=python,pytorch,tensorflow,jupyter,opencv,pandas&size=56&gap=4&radius=0&bgcolor=1c1c3c&perline=6)
+![Bold](https://charmly.read-me.workers.dev/icons?i=svelte,angular,react,nestjs,django&size=58&gap=0&radius=0&bgcolor=1c1c3c&perline=5)
 
-### No Background
+**No background**
 
 ```text
 https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=false&size=48&gap=10
@@ -92,7 +72,7 @@ https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=fals
 
 ![No background](https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=false&size=48&gap=10)
 
-### Centered in HTML
+**Centered in HTML**
 
 ```html
 <p align="center">
@@ -100,162 +80,99 @@ https://charmly.read-me.workers.dev/icons?i=git,github,gitlab,vscode,vim&bg=fals
 </p>
 ```
 
-<p align="center">
-  <img src="https://charmly.read-me.workers.dev/icons?i=git,kubernetes,gitlab,c,github&size=52&radius=10" />
-</p>
+---
+
+## ⚠️ Things to Know
+
+- **Spelling matters.** Names are not case-sensitive, but they must match the [icon list](./ICONS-LIST.md). Unknown names are skipped without an error.
+- **The limit is 50 names per request**, and it counts every name you type, including unknown ones.
+- **`bgcolor` only applies when `bg=true`.**
+- **Images refresh about every minute.** Changes you make to the URL can take up to a minute to appear.
+
+### Errors
+
+If a parameter is invalid, the image URL returns a plain-text message with status `400`. The message says which parameter is wrong and the allowed range, so check the table above.
+
+If every icon name is unknown, you get an image that says `No valid icons found`.
 
 ---
 
-## Errors
+## 🛠️ For Developers
 
-All errors return `text/plain` with the HTTP status below.
+This section explains how the service is built, for contributors and anyone adding icons.
 
-| Condition | Status | Response Body |
-|-----------|:------:|---------------|
-| `i` missing or empty | `400` | `Missing "i" query parameter, e.g. ?i=js,html,css` |
-| More than 50 icons | `400` | `Too many icons requested: max 50, got <N>` |
-| `size` invalid | `400` | `Invalid "size" parameter: must be a number between 16 and 128` |
-| `gap` invalid | `400` | `Invalid "gap" parameter: must be a number between 0 and 32` |
-| `radius` invalid | `400` | `Invalid "radius" parameter: must be a number between 0 and 24` |
-| `bg` invalid | `400` | `Invalid "bg" parameter: must be "true" or "false"` |
-| `bgcolor` invalid | `400` | `Invalid "bgcolor" parameter: must be a 3 or 6 digit hex color, e.g. "ff0000" or "#f00"` |
-| Rate limit exceeded | `429` | `Too Many Requests` with `Retry-After: 60` |
-| Unknown path | `404` | `Not found` |
+### Project Structure
 
----
+| Path | Purpose |
+|------|---------|
+| `icons/` | One `.svg` file per icon. The filename is the icon name. |
+| `build-icons.js` | Converts `icons/` into `dist/icons.json`. |
+| `dist/icons.json` | Generated. Each icon's `viewBox` and inner SVG markup. |
+| `src/worker.js` | Entry point. Rate limiting, routing, and parameter validation. |
+| `src/icons.js` | Defaults, limits, and SVG layout and rendering. |
+| `src/utils.js` | Validation helpers for numbers, booleans, and hex colors. |
+| `wrangler.toml` | Cloudflare config. Runs the build before each deploy. |
 
-## Unknown Icon Names
+### How a Request Becomes an Image
 
-Names that are not in `dist/icons.json` are skipped. If every requested name is unknown, the SVG contains:
+1. **Rate limit.** The client IP (from `CF-Connecting-IP`) is checked. Over 100 requests per minute returns `429`.
+2. **Parse.** `i` is split on commas, trimmed, lowercased, and empty entries are removed.
+3. **Validate.** Each option is checked against its range. Any failure returns `400`.
+4. **Filter.** Names not present in `dist/icons.json` are dropped.
+5. **Layout.** `buildSvg()` in `src/icons.js` works out rows and columns:
+   - `columns` is `perline` (capped at the icon count), or all icons if `perline` is missing or `0`.
+   - `width = columns × size + (columns − 1) × gap`, and `height` works the same way with rows.
+6. **Render.** Each icon is placed with `translate(x, y)`. With `bg=true`, it is drawn inside a rounded rectangle and clipped to it. With `bg=false`, it is placed directly.
+7. **Respond.** An SVG is returned with a 60-second cache.
 
-```text
-No valid icons found
-```
+### Build Step
 
----
+`build-icons.js` runs before each deploy (`npm run build`). For every SVG in `icons/`, it:
 
-## Rate Limit
+- Reads `viewBox` from the root `<svg>`. If that is missing, it uses `width` and `height`, falling back to `0 0 24 24`.
+- Keeps only the markup inside `<svg>…</svg>`.
+- Prefixes every `id` with the icon name, for example `id="a"` in `javascript` becomes `i-javascript-a`. This stops IDs clashing when several icons share one image, and updates the references (`url(#…)`, `href`, `xlink:href`).
 
-- **100 requests per minute per IP.**
-- Counters live in Worker memory, per isolate. This throttles a single abusive client but is **not** a global counter across all Cloudflare colos.
-- When the limit is exceeded, the response is `429` and includes `Retry-After: 60`.
+Icons that cannot be parsed are skipped with a warning.
 
----
+### Adding an Icon
 
-## How Charmly Serves an Icon
+1. Add `yourname.svg` to `icons/`. The name is lowercased, so use lowercase.
+2. Make sure the SVG has a `viewBox`, or both `width` and `height`.
+3. Run `npm run build` to check it. The output reports how many icons were generated and any skipped files.
+4. Deploy. Then add the icon to [ICONS-LIST.md](./ICONS-LIST.md).
 
-### 1. Icon Files
+### Known Limitations
 
-Each icon is a separate `.svg` file in `icons/`. The filename without `.svg` is the icon ID used in `?i=`.
-
-### 2. Build Step
-
-`build-icons.js` runs before deployment. It does four things:
-
-1. Reads every `.svg` file in `icons/`.
-2. Extracts `viewBox` from the root `<svg>` tag.
-3. Extracts the inner content between `<svg>` and `</svg>`.
-4. Namespaces every ID inside the icon. An ID like `a` becomes `i-javascript-a`, and every reference is updated:
-   - `url(#a)`
-   - `xlink:href="#a"`
-   - `href="#a"`
-
-The output is written to `dist/icons.json`:
-
-```json
-{
-  "javascript": {
-    "viewBox": "0 0 24 24",
-    "content": "<path ... />"
-  }
-}
-```
-
-### 3. Request Handling
-
-The Worker receives `GET /icons`.
-
-1. Reads the client IP from `CF-Connecting-IP`.
-2. Applies rate limiting.
-3. Reads `i`, `perline`, `size`, `gap`, `radius`, `bg`, and `bgcolor`.
-4. Validates each value.
-5. Filters out icon names that are not present in `dist/icons.json`.
-6. Computes layout:
-   - `columns = perline` or the number of valid icons
-   - `rows = ceil(valid icons / columns)`
-   - `width = columns * size + (columns - 1) * gap`
-   - `height = rows * size + (rows - 1) * gap`
-7. Renders each icon inside a `<g transform="translate(x, y)">`.
-8. Returns one SVG with these headers:
-
-```http
-Content-Type: image/svg+xml; charset=utf-8
-Cache-Control: public, max-age=60
-Access-Control-Allow-Origin: *
-X-Content-Type-Options: nosniff
-```
-
-### 4. Background Handling
-
-- **`bg=true`**: each icon is rendered inside a rounded rectangle with the requested `bgcolor` and `radius`. The icon is clipped to that rectangle.
-- **`bg=false`**: the rectangle and clip path are skipped. The icon is placed directly in the layout.
-
-### 5. Cache
-
-The response is cached for **60 seconds**. This is intentionally short while the project is under active development. It will increase once the icon set and rendering are stable.
+- ID rewriting is regex-based. `url('#id')` with quotes, and IDs referenced only from `style` attributes, are not rewritten. Those icons can break when they share an image with others.
+- `perline` is documented as 1–50, but larger values are accepted and capped.
+- `size`, `gap`, and `radius` accept decimals.
+- The rate limit is kept per worker instance, so it is not a global limit.
 
 ---
 
-## Limits
+## ❓ FAQ
 
-| Limit | Value |
-|-------|-------|
-| Icons per request | 50 |
-| Icon size | 16–128 px |
-| Gap | 0–32 px |
-| Corner radius | 0–24 px |
-| Icons per row | 1–50, or all in one row |
-| Rate limit | 100 requests/minute per IP |
-| Cache | 60 seconds |
+### Why does my icon not show up?
 
----
+Check the spelling against the [icon list](./ICONS-LIST.md). Unknown names are skipped silently. If none of the names are valid, you see `No valid icons found`.
 
-## FAQ
+### What is the difference between leaving out `perline` and using `perline=6`?
 
->**How do I add an icon?**
->
->Add an `.svg` file to `icons/` and commit it. The next build includes it.
+Without `perline`, all icons go in one row. With `perline=6`, you get six icons per row, and the rest wrap onto new rows.
 
->**Why do icon IDs get prefixed in `dist/icons.json`?**
->
->To prevent ID collisions when multiple icons appear in one SVG. An icon that defines `id="a"` would otherwise conflict with another icon that also defines `id="a"`.
+### Why does `bgcolor` have no effect?
 
->**What happens if an icon is missing?**
->
->It is skipped. If every requested icon is missing, the SVG contains `No valid icons found`.
+It only applies when the background is shown. Set `bg=true` (or leave it out) for `bgcolor` to take effect.
 
->**What is the difference between `perline` omitted and `perline=6`?**
->
->Omitted: one row. `perline=6`: six icons per row, then wrap.
+### Why does my URL fail with more than 50 icons?
 
->**Does `bgcolor` work when `bg=false`?**
->
->No. `bgcolor` is ignored when the background is hidden.
+The limit counts every name you type, including unknown names and repeats. Remove some names to get under 50.
 
->**Is there a maximum number of icons per request?**
->
->Yes. 50.
+### Why does the image take a minute to update?
 
->**Why is the cache only 60 seconds?**
->
->Active development. Icon updates should appear quickly. The value will increase when the project stabilizes.
+Responses are cached for 60 seconds. The cache is kept short while the icon set is still changing.
 
----
+### Can I use this outside a README?
 
-## Links
-
-- [Full icon list](./ICONS-LIST.md)
-- [Cards guide](./CARDS.md)
-- [Changelog](../CHANGELOG.md)
-- [License](../LICENSE)
-- [Third-party notices](../NOTICE.md)
+Yes. The response is a standard SVG, and it allows cross-origin requests, so it works in websites and apps too.

@@ -153,7 +153,7 @@ Every star and share makes a real difference.
 Charmly wouldn't exist without these incredible projects and platforms:
 
 - **☁️ [Cloudflare Workers](https://workers.cloudflare.com/)** — the edge runtime that powers Charmly
-- **🎨 [theSVG](https://thesvg.org/)** — the icon aggregator behind all 1,028 icons
+- **🎨 [theSVG](https://thesvg.org/)** — a primary source for many of the icons in this library
 - **💡 [skill-icons](https://github.com/tandpfun/skill-icons)** — the original inspiration
 - **🌐 [GitHub](https://github.com/)** — for hosting the code and providing free CI/CD
 
